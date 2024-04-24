@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './Wrapper.ps1' -setVariables -importTimeMetadata -databaseRefresh -loadTime -sendUserEmail -ProcessName 'Time Full Run - GCA'"

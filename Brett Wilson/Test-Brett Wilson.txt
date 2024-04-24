@@ -1,0 +1,7 @@
+Hi Chris,
+Here is my little code test. Please do the following with the attached code:
+•	Read it, let me know what it does and how it works.
+•	Identify any shortcomings of the implementation. 
+•	Figure out a way to re-write it to be more concise and elegant. Variables should be camel-cased. Inputs and outputs should stay the same, but parameters may change in name and case. You may use any methods to arrive at your result. Please test the code to ensure that various inputs lead to error-free outputs.
+•	Add an additional feature: allow a comparison window of a variable length to be used, with a parameter for setting this (and with a default value of 3 characters).
+Eager to see what you come up with! Let me know how long it takes you.

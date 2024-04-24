@@ -1,0 +1,14 @@
+Finance / Labor,JDE / OCF,DIMENSION,FILE,JobName
+Finance,JDE,Account,JDE_MetaData_Attr_Account.csv,01_JDE_Account
+Finance,JDE,Company,JDE_MetaData_Company.csv,02_JDE_Company
+Finance,JDE,Operating_Group (Hierarchy),JDE_MetaData_BusinessUnitHierarchy.csv,03_JDE_OG_Hierarchy
+Finance,JDE,Operating_Group (BU),JDE_MetaData_BusinessUnit.csv,04_JDE_OG_BU
+Finance,OCF,Account,AccountSegmentHierarchy.txt,01_OCF_Account
+Finance,OCF,Company,CompanySegmentHierarchy.txt,02_OCF_Company
+Finance,OCF,Operating_Group (Department / CC),Cost Center Operating Group.txt,03_OCF_OG_Dept
+Finance,OCF,Operating_Group (Project),ProjectSegmentHierarchy.txt,04_OCF_OG_Project
+Finance,OCF,Operating_Group (Top Task),TopTaskSegmentHierarchy.txt,05_OCF_OG_Top_Task
+Labor,JDE,Position,JDE_MetaData_Position.csv,01_Labor_Position
+Labor,JDE,Pay_Code (JDE),JDE_MetaData_Pay_Code_ABM.csv,02_Labor_Pay_Code_JDE
+Labor,OCF/GCA,Pay_Code (OCF/GCA),"
+JDE_MetaData_Pay_Code_GCA.csv",03_Labor_Pay_Code_OCF

@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './Wrapper.ps1' -setvariables -ProcessName 'EPM_Finance'"

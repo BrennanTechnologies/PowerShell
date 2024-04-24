@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "uC1tBw+5jg7Yrw7JhpBhCn7V8hI+ozXytawtbjvKvTvrFmgnZhKRqamdJleqnXNlUiNtMTkrpTk7ma7DiKVM5A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\brenn\\OneDrive\\Documents\\__Repo\\PowerShell\\CustomModules\\CustomModules.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\brenn\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\brenn\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\brenn\\.nuget\\packages\\powershellstandard.library\\5.1.0-preview-03\\powershellstandard.library.5.1.0-preview-03.nupkg.sha512"
+  ],
+  "logs": []
+}

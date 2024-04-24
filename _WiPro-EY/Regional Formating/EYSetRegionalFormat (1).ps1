@@ -1,0 +1,372 @@
+﻿<#
+Revision History
+Version   Date          Developer            Description
+1.0       2022.02.26    Microsoft            Initial version
+1.1       2022.06.16    Anusha Pachigolla    Updated to work only for Autopilot machine in Estonia region
+1.2       2022.07.05    Anusha Pachigolla    Added logic to check if the current user is defaultuser0
+
+This script will set user's regional culture settings for countries identified and agreed by EY.
+All the remaining region/country will have default as per Windows Operating System settings.
+It will only be deployed to autopilot machines.
+The script will check for registry entry & will not rerun if there is an existing registry entry for this script under GlobalPackage ID.
+
+Steps to update the script for additional location identified and agreed by EY.
+1. Update the revision history
+2. To update the script for additional country add elseif in "function Config-WinRegionalOptions"
+   elseif($GeoInfo.GeoId -eq GeoId) {
+         Set-EYRegionalFormat $GeoInfo 'Primary input profile (language and keyboard pair)'
+   }
+3. Below documents can be used to find the country specific Geo ID & paired regional locale:
+   Geo ID - https://docs.microsoft.com/en-us/windows/win32/intl/table-of-geographical-locations?redirectedfrom=MSDN
+   In the above MS document check for "Geographical location identifier (decimal)" to get the Geo ID of the selected region/country
+   You can also select the desired location from settings & use "Get-WinHomeLocation" command to get the Geo ID of the selected location.
+   eg: GeoId HomeLocation 
+       ----- ------------ 
+         244 United States
+
+   Locale - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs?view=windows-11
+   In the above MS document check for "Primary input profile (language and keyboard pair)" of the required region/country
+   In PowerShell use "[System.Globalization.CultureInfo]::GetCultures([System.Globalization.CultureTypes]::SpecificCultures)" command to get all the locale paired,
+   scroll & check the Name (Locale pair) for the selected region/country.
+   eg: LCID             Name             DisplayName                                                                                                                            
+       ----             ----             ----------- 
+       1033             en-US            English (United States)
+
+
+While configuring in Intune select below setting & should be targeted to the device group:
+Run this script using the logged-on credentials - Yes
+Enforce script signature check                  - No
+Run script in 64 bit PowerShell Host            - Yes
+
+To rerun an Intune targeted PowerShell script on the client, the following options exist:
+- uploading an updated version (file hash must be different) of this script in Intune will cause it to rerun on all targeted machines/users.
+- delete the 'Result' key under HKLM\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{GUID} on the client PC.
+  the {GUID} values should be visible in the script log file under c:\Maintenance\Logs\MDM
+Then either reboot the machine or simply restart the 'Microsoft Intune Management Extension' service.
+#>
+
+#Common script level variables
+$EYScriptVersion       = '1.2'
+$EYSeparatorCharCount  = 60
+$nl                    = [Environment]::NewLine
+$EYScriptExitCode      = [Int]
+$EYBitness             = [System.Environment]::Is64BitProcess
+$EYScriptLogFolder     = "c:\Maintenance\Logs\MDM"
+$EYMarkerAppNamePrefix = "MDM-" #this value will be prefixed to the GlobalPackageID ApplicationName value. This may then be used to easily identify these entries for reporting purposes.
+
+#Common script level variables that must be set to unique values if this script is to be used multiple times to set settings for let's say OneDrive,Office,EYKeys etc.
+$EYFriendlyName        = 'EYSetRegionalFormat' #this value should ideally match the name of this PowerShell script file
+$EYScriptGUID          = '12601887-850d-452a-bed6-3ffad29fdaf8' #[guid]::NewGuid() - GUID used to stamp the registry
+$EYMarkerPath          = "HKLM:\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{$EYScriptGUID}"
+$EYScriptLogFile       = "$EYScriptLogFolder\$EYFriendlyName-x64Is$EYBitness.log"
+
+#################################################################################
+#.SYNOPSIS
+# Main entry point function
+#
+#.DESCRIPTION
+# Serves as the main entry point in every .ps1 script. It is usually invoked
+# At the bottom of a .ps1 script, wrapped inside a try/catch block.
+#################################################################################
+function Invoke-EYBase {
+    [CmdletBinding()]
+    param ()
+
+    try {
+
+        #Create the log folder if it does not already exist. This is required because the start-transcript cmdlet will not create the folder.
+        if (!(Test-Path $EYScriptLogFolder)) {
+            New-Item -Path $EYScriptLogFolder -ItemType Directory -Force -Confirm:$false | Out-Null
+        }
+
+        Start-Transcript -Path "$EYScriptLogFile" -IncludeInvocationHeader -Append -Force | Out-Null
+
+        $EYScriptExitCode = Invoke-EYMain
+
+        #Catch instances where no exit code was received. Most likely points to a bug in the code.
+        if ($EYScriptExitCode -isnot [Int]) {
+            throw '$EYScriptExitCode' + " variable was not set to a number. Value was '$($EYScriptExitCode)'"
+        }
+        elseif ($EYScriptExitCode -eq 18181) {
+            Write-Host "The Script finished with the special 18181 success return code."
+        }
+    }
+    catch {
+        Write-Error "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        $EYScriptExitCode = 16161 #unhandled, unexpected error
+    }
+    finally {
+        Write-Host "About to exit the script with exit code $($EYScriptExitCode)"
+        Stop-Transcript -ErrorAction Continue | Out-Null
+        Exit $EYScriptExitCode
+    }
+}
+
+#################################################################################
+#.SYNOPSIS
+# Main logic for this script
+#
+#.DESCRIPTION
+# This is the function that contains the main logic of the script.
+# All code paths of this function should always Return or Write-Output an [Int] value.
+# This value is what will be used as an exit code by the script.
+#################################################################################
+function Invoke-EYMain {
+    [CmdletBinding()]
+    param ()
+
+    try {
+        $EYFunctionExitCode = [Int]
+        $EYCreateMarker = $true
+        $defaultUser0Name = 'defaultuser0'
+        $currentlyLoggedInUser = Get-LoggedInUser #Get the logged in username.
+
+        Write-Host ('*' * $EYSeparatorCharCount)
+        Write-Host "Starting Script"
+        Write-Host "Friendly Script Name: $EYFriendlyName"
+        Write-Host "Script Name: $($MyInvocation.ScriptName)"
+        Write-Host "Version: $EYScriptVersion"
+        Write-Host "Is x64 process: $([System.Environment]::Is64BitProcess)"
+        Write-Host ('*' * $EYSeparatorCharCount)
+        Write-Host "The current logged in user is '$currentlyLoggedInUser'."
+
+        #Make sure we do not run this script if the logged in user is 'defaultuser0.
+        if ($currentlyLoggedInUser -ieq $defaultUser0Name) {
+            Write-Host "The current logged in user is '$defaultUser0Name'. The script will not do anything and exit now."
+            $EYFunctionExitCode = 18181
+            $EYCreateMarker = $false
+        }
+        else {
+            if (Test-Path $EYMarkerPath) {
+                Write-Host "This script has already been executed on this machine. The script will not do anything and exit now. Details: $EYMarkerPath"
+            }
+            else {
+                Write-Host "This script has not yet been executed on this machine, will now run it for the first time."
+                Write-Host "The script will now validate if this is an Autopilot computer."
+                                 
+                #Allow to run only on autopilot computer.
+   #             if (-not ($env:COMPUTERNAME -like 'XW*')) {
+   #                 Write-Host "This computer is not an autopilot enrolled device. The script will not do anything and exit now."
+   #                 return 18181
+   #             }
+                       
+                Write-Host "This computer is an autopilot enrolled device, hence the script will now check the region selected."                                 
+                Write-Host ('-' * $EYSeparatorCharCount)
+                #CODE GOES HERE (START)
+                ##################################################
+                
+                Config-WinRegionalOptions
+                
+                ##################################################
+                #CODE GOES HERE (END)
+                Write-Host ('-' * $EYSeparatorCharCount)    
+            }        
+        }
+        $EYFunctionExitCode = 18181
+    }
+    catch {
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        Write-Error "Exception Details: $nl$_"
+        $EYFunctionExitCode = 17171
+    }
+    finally {
+        if ($EYCreateMarker){
+            #Create the reg marker to indicate that this script already ran on this pc. This has no real use in this script, just doing it for additional information
+            #We are in essence creating a legacy GlobalPackageID entry. Using the legacy format will have the benefit that SCCM will automatically include it in its inventory.
+            Write-Host "Creating the marker entry in $EYMarkerPath"
+            $Now = Get-Date
+            New-Item -Path $EYMarkerPath -Force | Out-Null #NOTE: This command will completely purge any existing values and subkeys in the specified key
+            New-ItemProperty -Path $EYMarkerPath -Name "ApplicationName" -Value "$EYMarkerAppNamePrefix$EYFriendlyName" -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "ApplicationVersion" -Value $EYScriptVersion -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "GlobPackIDVal1" -Value $EYFunctionExitCode -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "InstallDate" -Value (Get-Date $Now -Format "yyyyMMdd") -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "InstallTimeLocal" -Value (Get-Date $Now -Format "HHmmss") -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "InstallTimeUTC" -Value $Now.ToUniversalTime().ToString("HHmmss") -PropertyType STRING -Force | Out-Null
+            New-ItemProperty -Path $EYMarkerPath -Name "ScriptVersion" -Value $EYScriptVersion -PropertyType STRING -Force | Out-Null
+
+            Write-Host "Exiting Invoke-EYMain with exit code $EYFunctionExitCode"
+            Write-Host ('*' * $EYSeparatorCharCount)
+        }
+    }
+    Return $EYFunctionExitCode
+}
+
+#################################################################################
+#.Synopsis  
+#This function will check for the region selected and invoke the Function Set-EYRegionalFormat to set the regional format
+#
+#.DESCRIPTION
+#Config-WinRegionalOptions will help you identify the current selected country (Get-WinHomeLocation).
+#This function will call the Set-EYRegionalFormat function to set the desired culture settings.
+#Current script will change the regional setting if user selected Estonia & Latvia as the country or region.
+#To update the script for additional country, add elseif in "function Config-WinRegionalOptions".
+#   elseif($GeoInfo.GeoId -eq GeoId) {
+#         Set-EYRegionalFormat $GeoInfo 'Primary input profile (language and keyboard pair)'
+#     }
+#################################################################################
+function Config-WinRegionalOptions {
+    [CmdletBinding()]
+    param ()
+    Try {
+        $GeoInfo = Get-WinHomeLocation
+        Write-Host "The current Windows location is '$($GeoInfo.HomeLocation)' & the Geo ID is '$($GeoInfo.GeoId)'."
+               
+        if($GeoInfo.GeoId -eq 39) {
+            Set-EYRegionalFormat $GeoInfo 'en-CA' #Canada
+        }
+        elseif($GeoInfo.GeoId -eq 84) {
+            Set-EYRegionalFormat $GeoInfo 'fr-FR' #France
+        }
+        elseif($GeoInfo.GeoId -eq 94) {
+            Set-EYRegionalFormat $GeoInfo 'de-DE' #Germany
+        }
+        elseif($GeoInfo.GeoId -eq 122) {
+            Set-EYRegionalFormat $GeoInfo 'ja-JP' #Japan
+        }
+        elseif($GeoInfo.GeoId -eq 241) {
+            Set-EYRegionalFormat $GeoInfo 'uk-UA' #Ukraine
+        }
+        elseif($GeoInfo.GeoId -eq 11) {
+            Set-EYRegionalFormat $GeoInfo 'es-AR' #Argentina
+        }
+        elseif($GeoInfo.GeoId -eq 12) {
+            Set-EYRegionalFormat $GeoInfo 'en-AU' #Australia
+        }
+        elseif($GeoInfo.GeoId -eq 67) {
+            Set-EYRegionalFormat $GeoInfo 'ar-EG' #Egypt
+        }
+        elseif($GeoInfo.GeoId -eq 56) {
+            Set-EYRegionalFormat $GeoInfo 'es-CU' #Cuba
+        }
+        elseif($GeoInfo.GeoId -eq 32) {
+            Set-EYRegionalFormat $GeoInfo 'pt-BR' #Brazil
+        }
+        else {
+            Write-Host "Selected Windows location '$($GeoInfo.HomeLocation)' does not need any specific regional format to be set, so the script will not make any changes."
+        }
+    }
+    catch {
+        Write-Error "Something went wrong while executing Config-WinRegionalOptions function. Exception caught."
+        Write-Error "Exception Details: $nl$_"
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        throw
+    }
+}
+
+#################################################
+#.Synopsis  
+#This function will be called by the function Config-WinRegionalOptions & will set the regional setting as per selection during the OOBE
+#
+#.DESCRIPTION
+#This function will set the culture and the regional format drop down option as per the location selected during the OOBE phase using the below 2 cmdlets   
+#Set-WinCultureFromLanguageListOptOut
+#    This command helps to align the drop-down selection with the Current format under "Start Menu -> Settings -> Region -> Regional Format".
+#    The Set-WinCultureFromLanguageListOptOut cmdlet sets the Culture, or User Locale, opt-out setting for the current user account. 
+#    Setting this option to $True disables the action of dynamically setting the Culture for the current user based on changes to the Windows display language. 
+#    Setting this option to $False activates the dynamic setting behaviour. The default setting is $False.
+#    Selecting -optout parameter as true helps to align the required country in the drop down in user setting
+#Set-Culture
+#    Sets the user culture for the current user account.
+#    The Set-Culture cmdlet sets a specific culture for the current user account.
+#################################################################################
+function Set-EYRegionalFormat {
+    param(
+        [Parameter(Position = 0, Mandatory = $true)]
+        [Object]$GeoInfo,
+        [Parameter(Position = 1, Mandatory = $true)]
+        [String]$GeoCulture
+    )
+    try {
+        Write-Host "$($GeoInfo.GeoId) - $($GeoInfo.HomeLocation) requires a specific regional format to be set."
+        Write-Host "Regional format will be set to '$GeoCulture'."
+        #Sets the drop down in regional format according to the current format
+        Set-WinCultureFromLanguageListOptOut -OptOut $True -Verbose
+        #Sets the user culture for the current user account
+        Set-Culture $GeoCulture
+    }
+    catch {
+        Write-Error "Something went wrong while executing Set-EYRegionalFormat function. Exception caught."
+        Write-Error "Exception Details: $nl$_"
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        throw
+    }
+}
+
+#################################################################################
+#.SYNOPSIS
+# Return the name of the currently logged in user
+#
+#.DESCRIPTION
+# During the ESP device phase, this will return 'defaultuser0'
+# When a user is logged in, for 'CH\guj' it would return 'guj'
+# If no user is currently logged in it will return an empty string ''
+#################################################################################
+function Get-LoggedInUser {
+    [CmdletBinding()]
+    param ()
+
+    try {
+        $loggedInUser = Get-WmiObject Win32_ComputerSystem | Select-Object username
+        Write-Host "User value detected is '$loggedInUser'"
+        if (($null -eq $loggedInUser) -or ($loggedInUser -eq '')) {
+            Write-Host "No currently logged in user could be detected."
+            $loggedInUser = [string]''
+        }
+        else {
+            $loggedInUser = [string]$loggedInUser
+            $loggedInUser = $loggedInUser.split("=")
+            $loggedInUser = $loggedInUser[1]
+            $loggedInUser = $loggedInUser.split("}")
+            $LoggedInUser = $LoggedInUser[0]
+            $loggedInUser = $loggedInUser.split("\")
+            $loggedInUser = $loggedInUser[1]
+        }
+        Write-Host "Currently logged in user is '$loggedInUser'."
+    }
+    catch {
+        Write-Error "Something went wrong. Exception caught."
+        Write-Error "Exception Details: $nl$_"
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        throw
+    }
+    Return $loggedInUser
+}
+
+#################################################################################
+#.SYNOPSIS
+# Checks if a registry value exists and return boolean to indicate result.
+# Will also return true if the value exists but is empty.
+#
+#.DESCRIPTION
+# https://stackoverflow.com/questions/5648931/test-if-registry-value-exists
+#################################################################################
+Function Test-RegistryValue {
+    param(
+        [Alias("PSPath")]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [String]$Path,
+        [Parameter(Position = 1, Mandatory = $true)]
+        [String]$Name
+    )
+    process {
+        if (Test-Path $Path) {
+            $Key = Get-Item -LiteralPath $Path
+            if ($null -ne $Key.GetValue($Name, $null)) {
+                Write-Host "Key '$Path\$Name' with value '$($Key.GetValue($Name, $null))' was detected"
+                $true
+            } else {
+                Write-Host "Path '$Path' exists, but Key '$Name' does not exist"
+                $false
+            }
+        } 
+        else {
+            Write-Host "Path '$Path' does not exist"
+            $false
+        }
+    }
+}
+
+#################################################################################
+# Main
+#################################################################################
+Invoke-EYBase

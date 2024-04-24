@@ -1,0 +1,3 @@
+dotnet new install Microsoft.PowerShell.Standard.Module.Template::0.1.0
+
+dotnet new psmodule

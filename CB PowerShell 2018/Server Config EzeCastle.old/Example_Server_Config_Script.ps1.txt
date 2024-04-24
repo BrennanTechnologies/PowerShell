@@ -1,0 +1,188 @@
+﻿#region Document Properties
+<###############################################################################################################################
+ .DESCRIPTION
+
+            Sample Server Configuration Script for EzeCastle
+
+.FILENAME
+            Example_Server_Config_Script.ps1
+
+.DATE
+            2/28/2018
+
+.AUTHOR
+            Chris Brennan brennanc@hotmail.com
+
+ ##############################################################################################################################>
+#endregion
+
+
+<#
+
+Server Configuration Example Script
+
+Work Flow
+
+Detect & Verify OS
+
+Set IP
+
+Set DNS
+
+Join Domain
+
+Set the ip and dns servers 
+Ip 10.0.0.1 255.255.255.0  
+Gateway 10.0.0.250 
+Dns 10.0.0.220 10.0.0.221 
+
+Windows script for windows 2012 r2
+All inputs need to be from sql, a csv input file, or arguments 
+
+
+Set the ip and dns servers 
+Ip 10.0.0.1 255.255.255.0  
+Gateway 10.0.0.250 
+Dns 10.0.0.220 10.0.0.221 
+Join to a domain (your choice on the name)
+
+Set swap file to D drive 
+Set cdrom drive to R drive 
+
+Disable ipv6 
+
+Rename adapter to lan 
+
+Installed .net framework 3.5 
+
+Set firewall to allow rdp from 10.0.0.0/24 
+
+Install group policy management command let
+
+Install remote server admin tools
+
+Install telnet client 
+
+rename local administrator account to adminlocal 
+update windows to newest updates from Microsoft 
+
+
+
+
+
+#>
+
+
+Function Start-Script
+{
+    ### Clears the $Error array, and suppresses the output. 
+    $Error.clear() | out-null
+}
+
+Function Check-OS
+{
+    ### Use WMI to get the Server OS Version
+    $OSVer = (Get-CimInstance Win32_OperatingSystem).version
+
+    ### Alternate OS Version Detection
+    [environment]::OSVersion.Version
+    $serverOS.version -match "(\d{1,1})\.(\d{1,1})\.(\d{1,4})" | out-null
+
+}
+
+Function Set-IPv4_Settings
+{
+
+    New-NetIPAddress –InterfaceAlias “Wired Ethernet Connection” –IPv4Address “192.168.0.1” –PrefixLength 24 -DefaultGateway 192.168.0.254
+
+}
+
+
+Function Set-DNS
+{
+    
+    Set-DnsClientServerAddress -InterfaceAlias “Wired Ethernet Connection” -ServerAddresses 192.168.0.1, 192.168.0.2
+}
+
+
+
+Function Do-Something 
+{
+    BEGIN {}
+
+	
+    PROCESS {}
+	
+
+    END {}
+}
+
+
+#######################################3
+
+    ### ------------------------------------------------------- IPv4 --------------------------------------------------------------------------------
+    try
+    {
+        #Configures the Default TCPIP IP v4 Parameters
+        #Sets DNS Suffix for the primary Network Adapter, Sets DNS Suffix Searches to: ads.mckinsey.com & mckinsey.com
+        #Also Sets the Register this connections' address in DNS on, and Enables DNS suffix in DNS, and Disables LMHOSTS
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid" -Name "Domain" -Value "ads.mckinsey.com" 
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\" -Name "Searchlist" -Value "ads.mckinsey.com,mckinsey.com"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid\" -Name "RegistrationEnabled" -Value "1"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid\" -Name "RegisterAdapterName" -Value "1"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\NetBT\Parameters\" -Name "EnableLMHOSTS" -Value "0"
+    }
+    catch
+    {
+        fcnErrorTrap
+    }
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+
+    ### ----------------------------------------------------- NETBIOS -------------------------------------------------------------------------------
+    try
+    {
+        ###  Disabled NetBIOS on all Network Interfaces using the PowerShell cmdlet Get-WmiObject and settcpipnetbios method.
+        ###  A value of 1 for settcpipnetbios enables it, and 2 disables it. 0 is to use the DHCP default.
+        ### This uses the PS Get-WmiObject cmdlet
+        $adapter=(Get-WmiObject -computer $ServerName win32_networkadapterconfiguration | where {$_.servicename -like "vmxnet*"})
+        $adapter.settcpipnetbios(2)
+        
+        ###  This script utilitizes the external WMIC (Windows Management Intrumentation Command-line to change the TcpipNetbiosOptions
+        # wmic nicconfig where TcpipNetbiosOptions=0 call SetTcpipNetbios 2
+        # wmic nicconfig where TcpipNetbiosOptions=1 call SetTcpipNetbios 2
+    }
+    catch
+    {
+        fcnErrorTrap
+    }
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+}
+
+
+### ------------------------------------------------ Set Page File Size --------------------------------------------------------------
+
+function fcnSetPageFileSize
+{    
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        #Configures the Default PageFile Size on the Server
+        #Disables the "Automatically manage paging file size for all disks and sets a custom page file size of 6142 
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\" -Name "PagingFiles" -Value "c:\pagefile.sys 6142 6142" 
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+}

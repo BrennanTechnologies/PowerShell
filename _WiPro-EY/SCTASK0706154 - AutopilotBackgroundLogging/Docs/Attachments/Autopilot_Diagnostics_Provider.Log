@@ -1,0 +1,49 @@
+=== Logging started: 11/10/2022  12:20:00 ===
+*******************************************
+11/10/2022 12:20:05 :Computer Name : GT...
+11/10/2022 12:20:15 :Logged in Username: xyz
+11/10/2022 12:20:25 :Computer Serial Number: xxxx
+11/10/2022 12:20:05 : Tenant Name : 
+11/10/2022 12:20:15 : Tenant Id: yyyyy
+11/10/2022 12:20:25 : Device Id : xxxx
+11/10/2022 12:20:25 : Battery Percentage : 90%
+11/10/2022 12:21:30 : Power Scheme: ------
+11/10/2022 12:21:30 : PC Setup Assistant Application Information
+Phase: Initial Phase
+Start time: -----
+End time: -------
+
+Phase: Critical Phase
+Start time: -----
+End time: -------
+
+Phase: Post Setup Phase
+Start time: -----
+End time: -------
+=== Logging stopped: 11/10/2022  12:30:01:786 ===
+
+*********************************************************
+=== Logging started: 11/10/2022  12:35:01:346 ===
+11/10/2022 12:35:05 :Computer Name : GT...
+11/10/2022 12:35:15 :Logged in Username: xyz
+11/10/2022 12:35:25 :Computer Serial Number: xxxx
+11/10/2022 12:36:05 : Tenant Name : xxxx
+11/10/2022 12:36:05 : Tenant Id: yyyyy
+11/10/2022 12:36:15 : Device Id : xxxx
+11/10/2022 12:36:15 : Battery Percentage : 80%
+11/10/2022 12:36:30 : Power Scheme: ------
+11/10/2022 12:36:30 : PC Setup Assistant Application Information
+Phase: Initial Phase
+Start time: -----
+End time: -------
+
+Phase: Critical Phase
+Start time: -----
+End time: -------
+
+Phase: Post Setup Phase
+Start time: -----
+End time: -------
+=== Logging stopped: 11/10/2022  12:36:36:786 ===
+
+**********************************************************

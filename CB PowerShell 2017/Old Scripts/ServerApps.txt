@@ -1,0 +1,3 @@
+\\wfaws01l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive
+\\wfaws02l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive
+

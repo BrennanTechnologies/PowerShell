@@ -1,0 +1,853 @@
+﻿<#
+Revision History
+Version   Date        Developer               Description
+1.0       2019.06.13  Jan Gutjahr             Initial version
+1.1       2020.05.28  Jan Gutjahr             Added the -StartWhenAvailable switch when creating the scheduled task to make sure the task will run after a missed scheduled start
+
+The purpose of this script is to be able to add a number of sites to the IE Zones on Intune managed PCs in a way that mimics how this is done through GPPs for domain joined devices.
+This script will set up local scheduled tasks (on a recurring schedule if desired) that triggers a local .ps1 script which then processes the site list from a .txt file.
+The scheduled task will run as the USERS group.
+
+The list of sites must be updated in the function Get-TxtFileContent-CU().
+Ideally, the sites should be maintained outside of this script, in an Excel spreadsheet or similar.
+When changes to the sites are required, simply replace the list (copy/export from Excel with a macro) in the function Get-TxtFileContent-CU().
+
+At a high-level, this script carries out these actions:
+- Make sure script is running as 64bit process. If not, relaunch as 64bit.
+- create script folder (e.g. c:\ProgramData\EYCustomMDMScripts)
+- Grant everybody full access to that directory
+- Create .ps1 and .txt and .vbs file for CurrentUser (CU) in that directory, overwriting any existing files with the same names
+- Create CU scheduled task, overwriting any existing taks with the same name
+- Trigger CU scheduled task
+- Create GlobalPackageID entry
+
+Configuration:
+By using unique values for the following script variables, this script can be deployed side-by-side multiple times.
+This may be useful to logically separate various settings based on product or based on target audience (Pilot/Prod, Countries, BUs etc.).
+- $EYFriendlyName
+- $EYScriptGUID
+- $EYNameForLM
+- $EYNameForCU
+
+Note: This script must be run with Admin rights! This is achieved by configuring the PowerShell script
+option 'Run this script using the logged on credentials' in Intune to 'No'. This will cause the script to run in the SYSTEM context.
+
+This script creates a legacy GlobalPackageID entry and records the script exit code and datetime values. At the time when this script was developed, we did
+not have any real need for this. It was added in case we may need this down the road. Also, the GlobalPackageID format and location was chosen because that
+registry area is already inventoried by SCCM. Once we enable co-management this would therefore automatically be included in the inventory.
+
+If this script fails (does not exit with the 18181 success code), then Intune will keep trying to rerun it.
+The Write-Error details are available through the Microsoft Graph API and could potentially be used for reporting purposes.
+
+The script will use the following exit codes:
+16161 - unexpected error
+17171 - error in the main function of the script
+18181 - success
+
+Credits/Inspiration:
+https://developer.microsoft.com/en-us/graph/docs/api-reference/beta/api/intune_devices_devicemanagementscriptdevicestate_get
+https://oliverkieselbach.com/2018/02/12/part-2-deep-dive-microsoft-intune-management-extension-powershell-scripts/comment-page-1/#comment-186
+#>
+
+#Common script level variables
+$EYScriptVersion       = '1.1'
+$EYSeparatorCharCount  = 60
+$nl                    = [Environment]::NewLine
+$EYScriptExitCode      = [Int]
+$EYBitness             = [System.Environment]::Is64BitProcess
+$EYLocalScriptFolder   = $(Join-Path $env:ProgramData EYCustomMDMScripts)
+$EYScriptLogFolder     = "c:\Maintenance\Logs\MDM"
+$EYMarkerAppNamePrefix = "MDM-" #this value will be prefixed to the GlobalPackageID ApplicationName value. This may then be used to easily identify these entries for reporting purposes.
+
+#Common script level variables that must be set to unique values if this script is to be used multiple times to set settings for let's say OneDrive,Office,EYKeys etc.
+$EYFriendlyName        = 'EYSetIESiteZones' #this value should ideally match the name of this PowerShell script file
+$EYScriptGUID          = '43936aba-71b4-43eb-9ce5-3f8f4d452cd8' #[guid]::NewGuid() - GUID used to stamp the registry
+$EYMarkerPath          = "HKLM:\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{$EYScriptGUID}"
+
+$EYScriptLogFile       = "$EYScriptLogFolder\$EYFriendlyName-x64Is$EYBitness.log"
+$EYNameForLM           = 'EYSetIESiteZones-LM' #name that will be used for the .ps1, .reg as well as for the name of the scheduled task itself
+$EYNameForCU           = 'EYSetIESiteZones-CU' #name that will be used for the .ps1, .reg as well as for the name of the scheduled task itself
+
+#################################################################################
+#.SYNOPSIS
+# Main entry point function
+#
+#.DESCRIPTION
+# Serves as the main entry point in every .ps1 script. It is usually invoked
+# at the bottom of a .ps1 script, wrapped inside a try/catch block.
+#
+# It restarts the script as a PowerShell x64 bit process if it's not already 64bit, waits for it to finish and gathers the exit code and the standard error output.
+#################################################################################
+function Invoke-EYBase {
+    [CmdletBinding()]
+    param ()
+
+    try {
+
+        #create the log folder if it does not already exist. this is required because the start-transcript cmdlet will not create the folder.
+        if (!(Test-Path $EYScriptLogFolder)) {
+            New-Item -Path $EYScriptLogFolder -ItemType Directory -Force -Confirm:$false | Out-Null
+        }
+
+        Start-Transcript -Path "$EYScriptLogFile" -IncludeInvocationHeader -Append -Force | Out-Null
+
+        $EYScriptExitCode = Invoke-EYMain
+
+        #catch instances where no exit code was received. most likely points to a bug in the code
+        if ($EYScriptExitCode -isnot [Int]) {
+            throw '$EYScriptExitCode' + " variable was not set to a number. Value was '$($EYScriptExitCode)'"
+        }
+        elseif ($EYScriptExitCode -eq 18181) {
+            Write-Host "The Script finished with the special 18181 success return code."
+        }
+
+    }
+    catch {
+        Write-Error "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        $EYScriptExitCode = 16161 #unhandled, unexpected error
+    }
+    finally {
+        Write-Host "About to exit the script with exit code $($EYScriptExitCode)"
+        Stop-Transcript -ErrorAction Continue | Out-Null
+        Exit $EYScriptExitCode
+    }
+}
+
+#################################################################################
+#.SYNOPSIS
+# Main logic for this script
+#
+#.DESCRIPTION
+# This is the function that contains the main logic of the script
+#
+# All codepaths of this function should always Return or Write-Output an [Int] value.
+# This value is what will be used as an exit code by the script.
+#################################################################################
+function Invoke-EYMain {
+    [CmdletBinding()]
+    param ()
+
+    try {
+
+        $EYFunctionExitCode = [Int]
+
+        Write-Host ('*' * $EYSeparatorCharCount)
+        Write-Host "Starting Script"
+        Write-Host "Friendly Script Name: $EYFriendlyName"
+        Write-Host "Script Name: $($MyInvocation.ScriptName)"
+        Write-Host "Version: $EYScriptVersion"
+        Write-Host "Is x64 process: $([System.Environment]::Is64BitProcess)"
+        Write-Host ('*' * $EYSeparatorCharCount)
+
+        if (Test-Path $EYMarkerPath) {
+            Write-Host "This script has already been executed on this machine. Will rerun it anyway. Details: $EYMarkerPath"
+        }
+        else {
+            Write-Host "This script has not yet been executed on this machine. Will now run it for the first time."
+        }
+
+        Write-Host ('-' * $EYSeparatorCharCount)
+
+        #CODE GOES HERE (START)
+        ##################################################
+        #1 create the files required on the local PC
+
+        #create a custom script folder and make sure everyone has full access to it just in case
+        #then write the PS script files that will later on be triggered by the scheduled task in this folder
+        if (!(Test-Path $EYLocalScriptFolder)) {
+            Write-Host "Creating folder $EYLocalScriptFolder"
+            New-Item -Path $EYLocalScriptFolder -ItemType Directory -Force -Confirm:$false | Out-Null
+        }
+
+        #set folder permissions to grant all USERS full control just in case
+        Write-Host "Setting ACLs for $EYLocalScriptFolder"
+        $Acl = Get-ACL $EYLocalScriptFolder
+        $AccessRule= New-Object System.Security.AccessControl.FileSystemAccessRule("Users","FullControl","ContainerInherit,ObjectInherit","None","Allow")
+        $Acl.AddAccessRule($AccessRule) | Out-Null
+        Set-Acl $EYLocalScriptFolder $Acl | Out-Null
+
+        #create the necessary files for the CU scheduled task
+        #create the CU .ps1 file that will later on be triggered by the scheduled task
+        $localPsScriptName = "$EYNameForCU.ps1"
+        $scriptContent = Get-ScriptContent -RegType CU
+        Out-File -FilePath "$EYLocalScriptFolder\$localPsScriptName" -InputObject $scriptContent -Encoding unicode -Force -Confirm:$false | Out-Null
+        Write-Host "Created $EYLocalScriptFolder\$localPsScriptName"
+        #create the CU .txt file that will later on be processed by the scheduled task
+        $localTxtFileName = "$EYNameForCU.txt"
+        $txtContent = Get-TxtFileContent-CU
+        Out-File -FilePath "$EYLocalScriptFolder\$localTxtFileName" -InputObject $txtContent -Encoding unicode -Force -Confirm:$false | Out-Null
+        Write-Host "Created $EYLocalScriptFolder\$localTxtFileName"
+        #create the CU .vbs file that will later on be triggered by the scheduled task
+        #using this detour for the CU is a workaround to prevent the powershell console from flashing on the screen for a couple of seconds when the task runs
+        $localVbsFileName = "$EYNameForCU.vbs"
+        $vbsContent = Get-VbsFileContent-CU
+        Out-File -FilePath "$EYLocalScriptFolder\$localVbsFileName" -InputObject $vbsContent -Encoding unicode -Force -Confirm:$false | Out-Null
+        Write-Host "Created $EYLocalScriptFolder\$localVbsFileName"
+
+        ##################################################
+        #2 create the scheduled task
+
+        #Create Scheduled Task that will run as the local USERS group
+        Write-Host "Creating scheduled task for USERS group"
+        $localTaskName = "\EYIntune\$EYNameForCU" #the name can include a custom folder structure
+        $Action = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument """$EYLocalScriptFolder\$EYNameForCU.vbs""" #using wscript instead of cscript to avoid that a console window will briefly flash on screen
+        $Trigger1 = New-ScheduledTaskTrigger -Daily -At 1pm
+        $Principal = New-ScheduledTaskPrincipal -GroupID "S-1-5-32-545" #Use the well-known SID of the local Users group
+        $Settings = New-ScheduledTaskSettingsSet -Hidden -MultipleInstances IgnoreNew -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Hours 1) -Compatibility Win8
+        $Task = New-ScheduledTask -Action $Action -Principal $Principal -Trigger $Trigger1 -Settings $Settings
+        Register-ScheduledTask -TaskName $localTaskName -InputObject $Task -Force | Out-Null #if a task with this name already exists, it will update it
+        Write-Host "Triggering scheduled task for USERS group"
+        Start-ScheduledTask -TaskName $localTaskName | Out-Null #kick off the task right away for the first time so we don't have to wait for the trigger to kick in
+        ##################################################
+        #CODE GOES HERE (END)
+
+        Write-Host ('-' * $EYSeparatorCharCount)
+
+        $EYFunctionExitCode = 18181
+    }
+    catch {
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        Write-Error "Exception Details: $nl$_"
+        $EYFunctionExitCode = 17171
+    }
+    finally {
+        #create the reg marker to indicate that this script already ran on this pc. this has no real use in this sript, just doing it for additional information
+        #we are in essence creating a legacy GlobalPackageID entry. Using the legacy format will have the benefit that SCCM will automatically include it in its inventory.
+        Write-Host "Creating the marker entry in $EYMarkerPath"
+        $Now = Get-Date
+        New-Item -Path $EYMarkerPath -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "ApplicationName" -Value "$EYMarkerAppNamePrefix$EYFriendlyName" -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "ApplicationVersion" -Value $EYScriptVersion -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "GlobPackIDVal1" -Value $EYFunctionExitCode -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "InstallDate" -Value (Get-Date $Now -Format "yyyyMMdd") -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "InstallTimeLocal" -Value (Get-Date $Now -Format "HHmmss") -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "InstallTimeUTC" -Value $Now.ToUniversalTime().ToString("HHmmss") -PropertyType STRING -Force | Out-Null
+        New-ItemProperty -Path $EYMarkerPath -Name "ScriptVersion" -Value $EYScriptVersion -PropertyType STRING -Force | Out-Null
+
+        Write-Host "Exiting Invoke-EYMain with exit code $EYFunctionExitCode"
+        Write-Host ('*' * $EYSeparatorCharCount)
+    }
+    Return $EYFunctionExitCode
+}
+
+#################################################################################
+#.SYNOPSIS
+# Return the script content.
+#
+#.DESCRIPTION
+# This function will return the content of the script that will be created on the PC.
+#################################################################################
+function Get-ScriptContent {
+    [CmdletBinding()]
+    param (
+        [parameter(Mandatory=$true)]
+        [ValidateSet("LM","CU")]
+        [String] $RegType
+    )
+
+    try {
+
+        #the '@ end tag needs to be on a separate line at the end with no leading spaces.
+        $script = @'
+$EYScriptLogFolder = "<logfolder>"
+$EYScriptLogFile   = "$EYScriptLogFolder\<logfilename>"
+#create the log folder if it does not already exist. this is required because the start-transcript cmdlet will not create the folder.
+if (!(Test-Path $EYScriptLogFolder)) {
+    New-Item -Path $EYScriptLogFolder -ItemType Directory -Force -Confirm:$false | Out-Null
+}
+
+Start-Transcript -Path "$EYScriptLogFile" -IncludeInvocationHeader -Append -Force | Out-Null
+
+Write-Host 'Starting to import the sites'
+
+$Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains"
+
+Get-Content "<txtfilename>" | Where-Object {$_.Trim() -ne ''} | ForEach-Object {
+    #parse lines from txt file
+    $Prefix, $Subdomain, $Domain, $Zone = ($_ -split ",")
+
+    if ($Subdomain -ne "")
+    {
+        $Subdomain = "\" + $Subdomain
+    }
+
+    #Check for domain key
+    if (-not (Test-Path -Path "$Path\$Domain"))
+    {
+        $null = New-Item -Path "$Path\$Domain"
+    }
+    #Check for sub-domain key
+    if (-not (Test-Path -Path "$Path\$Domain$Subdomain"))
+    {
+        $null = New-Item -Path "$Path\$Domain$Subdomain"
+    }
+    #Add reg key
+    Set-ItemProperty -Path "$Path\$Domain$Subdomain" -Name $Prefix -Value $Zone -Type DWord
+}
+
+Write-Host 'Finished importing the sites'
+
+Stop-Transcript -ErrorAction Continue | Out-Null
+'@
+
+        $script = $script -replace '<logfolder>', "$EYScriptLogFolder"
+        if ($RegType -ieq 'LM') {
+            $script = $script -replace '<logfilename>', "$EYNameForLM.log"
+            $script = $script -replace '<txtfilename>', "$EYLocalScriptFolder\$EYNameForLM.txt"
+        }
+        else {
+            $script = $script -replace '<logfilename>', "$EYNameForCU.log"
+            $script = $script -replace '<txtfilename>', "$EYLocalScriptFolder\$EYNameForCU.txt"
+        }
+
+    }
+    catch {
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        Write-Error "Exception Details: $nl$_"
+        throw
+    }
+    Return $script
+}
+
+#################################################################################
+#.SYNOPSIS
+# Return the content to create the .txt file.
+#
+#.DESCRIPTION
+# This function will return the content of the .txt file that will be created on the PC.
+# This is the file that contains the list of sites that should be added.
+# Format input as prefix,subdomain,domain,zone
+# Note1: Zone should be in the format of 1 for Intranet, 2 for Trusted, 3 for Internet
+# Note2: Each line must include 3 commas!
+# Example1: Add "https://123.abc.com" to the trusted zone would be "https,123,abc.com,2"
+# Example2: Add "https://abc.com" to the intranet zone  would be https,,abc.com,1"
+# Example3: Add "*.abc.com" to the trusted zone  would be *,,abc.com,2"
+# Example4: Add "https://*.abc.com" to the intranet zone  would be https,,*.abc.com,1"
+
+#-------------------------------------------------------------------------------
+#Title = EY Site to Zone List
+#Version = 1.0
+
+# Change log
+# 20190715 - DT Imported V1 list of trusted sites from the ey loadset, excluding https://*.ey.com site as this was added to trusted to reduce number of entries.
+# ------------------------------------------------------------------------------
+# IMPORTANT NOTE: Sites should be copied to the section below between "$script = @'" and "'@". Sites MUST follow formatting as described above!
+#################################################################################
+function Get-TxtFileContent-CU {
+    [CmdletBinding()]
+    param ()
+
+    try {
+
+        #the '@ end tag needs to be on a separate line at the end with no leading spaces.
+        $script = @'
+
+https,,061dspoapp.com,1
+https,accessfed.idaassit,ey.com,1
+*,eytaxpocca,sharepoint.com,1
+https,us.eyonespaceu,ey.com,1
+https,eyonespaceu,ey.com,1
+https,citrixapps.na,eyua.net,1
+https,citrixapps.eurw,eyua.net,1
+https,eyonespaceu2,ey.com,1
+https,eyonespaceq,ey.com,1
+*,,eyua.net,1
+https,eyonespace,ey.com,1
+https,us.eyonespace,ey.com,1
+https,,eyo365uapphost.net,1
+*,,eyqa.net,1
+https,,eyo365dapphost.net,1
+https,,eyo365qapphost.net,1
+https,,eydapphost.net,1
+http,eyplus.iweb,eycan.com,1
+https,us.eyinteract,ey.com,1
+https,eycalendar.iweb,eycan.com,1
+http,eycalendar.iweb,eycan.com,1
+*,de.udt,ey.net,1
+https,eyappsusstg,ey.com,1
+https,eyappsus,ey.com,1
+https,us56u,ey.com,1
+https,us55,ey.com,1
+https,de.udt,ey.com,1
+*,sharev,ey.com,1
+https,us.share,ey.com,1
+*,eytaxuatca,sharepoint.com,1
+*,Mail1.o365,ey.com,1
+*,bas-eu.o365,ey.com,1
+*,mail5,ey.com,1
+*,mail3,ey.com,1
+*,mail1,ey.com,1
+*,mail2,ey.com,1
+*,de.iwa,ey.com,1
+https,,ppe061dspoapp.com,1
+https,globalaccess,ey.com,1
+https,sg.gdt,ey.com,1
+https,de.gdt,ey.com,1
+https,gdt,ey.com,1
+http,,203.2.2.60,1
+https,,203.2.2.60,1
+http,,203.2.10.113,1
+https,,203.2.10.113,1
+https,us.eyonespaceu4,ey.com,1
+https,citrixapps,eyua.net,1
+https,citrixapps.eurw,eydev.net,1
+*,,eylink.com,1
+https,politemail,ey.net,1
+https,,eyapphost.net,1
+http,cnhktpveyppar01.pacrim,ey.net,1
+*,,ey.co.il,1
+https,eyfundspace-stg,ey.com,1
+https,eyisp,ey.net,1
+*,,ey.net,1
+https,citrixapps.eurw,ey.net,1
+https,us.udt,ey.com,1
+https,us55u,ey.com,1
+https,eyappseu,ey.com,1
+https,eyappseustg,ey.com,1
+https,us.owau,ey.com,1
+*,autodiscover.mgd,ey.com,1
+*,mail,ey.com,1
+*,mail4,ey.com,1
+https,eytaxca,sharepoint.com,1
+*,*.iweb,ey.com,1
+https,accessfed.idaas,ey.com,1
+https,accessfed.idaasuat,ey.com,1
+https,,eyuapphost.net,1
+*,,mediashuttle.com,1
+https,,eyqapphost.net,1
+https,eyplus.iweb,eycan.com,1
+*,dtuv,ey.com,1
+https,eyinteract,ey.com,1
+https,citrixapps.na,ey.net,1
+*,de.sts,ey.com,1
+*,dtu,ey.com,1
+*,Mail2.o365,ey.com,1
+*,eytaxca,onmicrosoft.com,1
+*,bas-na.o365,ey.com,1
+https,device.login,microsoftonline.com,1
+https,rms.061.d,office365.com,1
+Http,adfsdevpoc,ey.com,1
+https,adfsdevpoc,ey.com,1
+https,globalaccess-ua,ey.com,1
+*,share,ey.com,1
+*,autodiscover,ey.com,1
+https,gsmweb.gamx,ey.com,1
+https,us.eyonespaceu2,ey.com,1
+https,eyonespacev,ey.com,1
+*,us60.eyd,ey.com,1
+*,,eydev.net,1
+https,us.gdt,ey.com,1
+http,content.clientportal,ey.com,2
+https,,entrust.net,2
+https,,pirkimai.eviesiejipirkimai.lt,2
+https,,secureidp.efl.fr5,2
+https,,eformrs.com,2
+https,,secure.efl.fr3,2
+https,,abonnes.efl.fr4,2
+https,arne2,creativesolutions.com,2
+*,www,dofiscal.com,2
+*,,edassist.com,2
+*,,edlinktuition.org,2
+https,,solutions.dnb.com,2
+*,www,dofiscal.net,2
+*,pg,dofiscal.com,2
+http,www,castore.ca,2
+https,,ey.digitaleservices.nl,2
+https,,login.digitaleservices.nl,2
+*,,dell.com,2
+https,,cvent-planner.com,2
+https,,cvtsv.com,2
+https,,cvent.com,2
+https,,cventmail.com,2
+https,secureconnect,creativesolutions.com,2
+https,www,banka.com.mk,2
+https,,brainshark.com,2
+https,eyglms6.learning.services,conduent.com,2
+http,,fxgs.com.au,2
+https,,fxgs.com.au,2
+http,www,ey-argentina.com.ar,2
+https,taxintegrator,cch.com.au,2
+*,yamalytics-receiver,cloudapp.net,2
+https,,*.cognistreamer.com,2
+https,,collegenanniesandtutors.com,2
+https,www,cch.com,2
+https,tax,cchgroup.com,2
+https,,backupcareadvantage.com,2
+*,,assets-yammer.com,2
+https,intelliconnect,cch.com,2
+https,logon,cch.com,2
+https,hr,cch.com,2
+https,myedgps,adobeconnect.com,2
+https,brighthorizons,adobeconnect.com,2
+http,intelliconnect,cch.com,2
+https,www,castore.ca,2
+https,www,casso.ca,2
+http,www,casso.ca,2
+https,,ey.com,2
+http,,2nd.md,2
+https,,brightstudy.com,2
+https,,amadeus.bvdinfo.com,2
+https,my,brighthorizons.com,2
+https,mysurvey,brighthorizons.com,2
+*,,brighthorizons.com,2
+https,,brighthorizons.com,2
+https,,brightcove.com,2
+*,,brightcove.net,2
+*,,brightcove.com,2
+http,,*.books24x7.com,2
+https,,*.books24x7.com,2
+http,,*.belgium.be,2
+https,,*.belgium.be,2
+https,edocs.au.anz,ey.net,2
+https,cvent,ey.net,2
+https,datatransfer-de,ey.net,2
+https,etp,ey.net,2
+http,defranmceptp01.de.eurw,ey.net,2
+https,defranmcerbs01.de.eurw,ey.net,2
+http,gb200,ey.net,2
+https,globaltravelservices-latam,ey.net,2
+https,mtrecordsmgmt,ey.net,2
+https,mtrecordsmgmtstg,ey.net,2
+https,recordsmgmt.ca.na,ey.net,2
+http,recordsmgmtstg.ca.na,ey.net,2
+https,eyhost.us.na,ey.net,2
+https,cms.pki,ey.net,2
+https,,bcove.video,2
+https,ram*,ey.net,2
+https,recordsmgmt,ey.net,2
+https,recordsmgmttemp,ey.net,2
+https,recordsmgmtusstg,ey.net,2
+http,contenteybr.sa,ey.net,2
+http,testcontenteybr.sa,ey.net,2
+https,thinktankqa,ey.net,2
+https,cpelearning,becker.com,2
+https,,bcove.me,2
+*,,azureedge.net,2
+*,,eyclienthub.com,2
+*,,eyclienthubd.com,2
+*,,eyclienthubq.com,2
+*,,eyclienthubx.com,2
+http,cmsssrs,eydev.net,2
+https,cmsssrs,eydev.net,2
+http,defravmdpo01,eydev.net,2
+http,defravmdsl01,eydev.net,2
+http,defravmtpo01,eydev.net,2
+*,spoprod-a,akamaihd.net,2
+https,cms.pki,eydev.net,2
+https,ram*,eydev.net,2
+https,recordsmgmtus,eydev.net,2
+*,,eygaait.com,2
+*,ip2,amadeus.be,2
+https,,aeat.es,2
+*,,agenciatributaria.es,2
+https,reports,adp.ca,2
+https,,adp.com,2
+http,defravmqpo01,eyqa.net,2
+http,www,adobe.com,2
+*,,eysupplife.com,2
+http,,eytaxpro,2
+http,,eytaxpron05,2
+http,,eytaxpron06,2
+https,torchlight,adobeconnect.com,2
+http,cmsssrs,eyua.net,2
+https,cmsssrs,eyua.net,2
+http,etp,eyua.net,2
+https,www,adobe.com,2
+http,www,a3software.com,2
+https,cms.pki,eyua.net,2
+http,defravmuae01,eyxstaging.net,2
+http,defravmuwd01,eyxstaging.net,2
+https,,familymattersresourceroom.com,2
+https,,fas109.com,2
+https,gosystemrs,fasttax.com,2
+https,,fasttax.com,2
+http,,*.fgov.be,2
+https,,*.fgov.be,2
+https,,gaait.com,2
+https,passport,getintocollege.com,2
+https,lc.passport,getintocollege.com,2
+https,,*.globaltaxreporter.com,2
+https,agenciatributaria,gob.es,2
+https,,*.gofileroom.com,2
+https,,*.gofileroomlogin.com,2
+https,eyportal,gofluent.com,2
+https,,gofluent.com,2
+https,download,gosystem.com,2
+https,gocomm,gosystem.com,2
+https,,gosystem.com,2
+http,*.drpmagna,isa.gov.il,2
+https,*.drpmagna,isa.gov.il,2
+https,*.magna,isa.gov.il,2
+https,mytax.iras,gov.sg,2
+https,,gsis.gr,2
+https,ey,raketa.ibc.ru,2
+*,,intellinex.com,2
+http,acslearningservices,intuition.com,2
+http,www,irs.gov,2
+https,www,irs.gov,2
+http,code,jquery.com,2
+http,www,knotia.ca,2
+https,www,knotia.ca,2
+https,university,learnlive.com,2
+https,university2,learnlive.com,2
+*,,lexis.com,2
+http,*.web,lexis.com,2
+https,*.web,lexis.com,2
+*,,lexisnexis.com,2
+*,,lexis-nexis.com,2
+https,,liquidengines.com,2
+*,g,live.com,2
+*,office,live.com,2
+*,*broadcast.officeapps,live.com,2
+*,*excel.officeapps,live.com,2
+*,*onenote,officeapps.live.com,2
+*,*powerpoint,officeapps.live.com,2
+*,*view,officeapps.live.com,2
+*,*visio,officeapps.live.com,2
+*,*word-edit.officeapps,live.com,2
+*,*word-view.officeapps,live.com,2
+*,odc.officeapps,live.com,2
+*,ssw,live.com,2
+*,storage,live.com,2
+*,,lync.com,2
+*,*.infra,lync.com,2
+*,*.online,lync.com,2
+*,*.resources,lync.com,2
+*,,mediaplatform.com,2
+http,,*.mediaplatform.com,2
+https,,*.mediaplatform.com,2
+*,,microsoft.com,2
+*,*.pipe.aria,microsoft.com,2
+*,compass-ssl,microsoft.com,2
+*,login,microsoft.com,2
+*,officeclient,microsoft.com,2
+*,teams,microsoft.com,2
+*,*.teams,microsoft.com,2
+*,autologon,microsoftazuread-sso.com,2
+*,becws,microsoftonline.com,2
+*,companymanager,microsoftonline.com,2
+*,click.email,microsoftonline.com,2
+*,hipservice,microsoftonline.com,2
+*,login,microsoftonline.com,2
+*,api.login,microsoftonline.com,2
+*,ccs.login,microsoftonline.com,2
+*,ccs-sdf.login,microsoftonline.com,2
+*,device.login,microsoftonline.com,2
+*,stamp2,login.microsoftonline.com,2
+*,logincert,microsoftonline.com,2
+*,loginex,microsoftonline.com,2
+*,login-us,microsoftonline.com,2
+*,passwordreset,microsoftonline.com,2
+*,api.passwordreset,microsoftonline.com,2
+*,provisioningapi,microsoftonline.com,2
+*,secure.aadcdn,microsoftonline-p.com,2
+*,login,microsoftonline-p.com,2
+*,nexus,microsoftonline-p.com,2
+*,clientconfig,microsoftonline-p.net,2
+*,hip,microsoftonline-p.net,2
+https,eastcoast,milbank.com,2
+*,,msappproxy.net,2
+*,,msedge.net,2
+*,,mstea.ms,2
+https,,mybrighthorizons.com,2
+https,,mybrighthorizons.info,2
+*,,myedassist.com,2
+*,*.cdn,office.net,2
+*,contentstorage.osi,office.net,2
+*,videoplayercdn.osi,office.net,2
+https,event,on24.com,2
+*,,ondemand.com,2
+*,admin,onedrive.com,2
+*,,onenote.com,2
+*,*cdn,onenote.net,2
+https,,onesourcelogin.com,2
+*,,onesourcelogin.eu,2
+https,,onesourcelogin.eu,2
+https,,onesourcetax.com,2
+*,*.log,optimizely.com,2
+*,www,personal-plans.com,2
+*,,phonefactor.net,2
+https,eygsl-stage,plateau.com,2
+https,eyhrits1-sandbox,plateau.com,2
+https,eyitsdev1-sandbox,plateau.com,2
+https,,plateau.com,2
+https,,eyclient.raketa.travel,2
+https,,revolutionprep.com,2
+http,checkpoint,riag.com,2
+https,checkpoint,riag.com,2
+https,,riahelp.com,2
+https,,riahome.com,2
+https,insourcers,riahome.com,2
+https,support2,riahome.com,2
+*,,sage.es,2
+*,,sagelogiccontrol.com,2
+*,,sagelogiccontrol.es,2
+https,,sap.com,2
+https,,sapsf.eu,2
+*,,sfbassets.com,2
+https,,sfsap.com,2
+*,oneclient,sfx.ms,2
+*,,sharepoint.com,2
+https,eycloudappdev,sharepoint.com,2
+https,eyqa,sharepoint.com,2
+https,,2nd.md,2
+*,,sharepointonline.com,2
+https,,sittercity.com,2
+http,ey,skillwsa.com,2
+https,ey,skillwsa.com,2
+https,,skillwsa.com,2
+*,*.asm,skype.com,2
+*,*.broker,skype.com,2
+*,*.cc,skype.com,2
+*,latest-swx.cdn,skype.com,2
+*,swx.cdn,skype.com,2
+*,*.config,skype.com,2
+*,*.conv,skype.com,2
+*,config.edge,skype.com,2
+*,feedback,skype.com,2
+*,*.msg,skype.com,2
+*,pipe,skype.com,2
+*,*.pipe,skype.com,2
+*,prod.registrar,skype.com,2
+*,skypegraph,skype.com,2
+*,*.teams,skype.com,2
+*,prod.tpc,skype.com,2
+*,*.secure,skypeassets.com,2
+*,,skypeforbusiness.com,2
+https,,sleepio.com,2
+http,*.ey,smarpshare.com,2
+https,*.ey,smarpshare.com,2
+http,login,smarpshare.com,2
+https,,successfactors.com,2
+https,,successfactors.eu,2
+*,,svc.ms,2
+*,,taleo.com,2
+*,,taleo.net,2
+*,,tamsonline.org,2
+*,,tamsqa.org,2
+https,,taxisnet.gr,2
+http,www,taxnavigator.ca,2
+https,www,taxnavigator.ca,2
+http,,taxpediask,2
+https,,taxstreampro.com,2
+*,,tenor.com,2
+https,cs,thomson.com,2
+https,gosystem,thomson.com,2
+https,,thomson.com,2
+https,cs,thomsonreuters.com,2
+http,,thomsonreuters.com,2
+https,,thomsonreuters.com,2
+*,,torchlight.care,2
+*,*.search.production.apac,trafficmanager.net,2
+*,*.search.production.emea,trafficmanager.net,2
+*,scsinstrument-ss-us,trafficmanager.net,2
+*,scsquery-ss-asia,trafficmanager.net,2
+*,scsquery-ss-eu,trafficmanager.net,2
+*,scsquery-ss-us,trafficmanager.net,2
+*,skypemaprdsitus,trafficmanager.net,2
+*,*.search.production.us,trafficmanager.net,2
+*,*.dc,trouter.io,2
+https,productioncloud2,verian.com,2
+https,web,eygems,2
+https,ey,webex.com,2
+https,eylearning,webex.com,2
+https,harvardbusinessreview,webex.com,2
+https,hbspevents,webex.com,2
+https,join-test,webex.com,2
+*,*.adl,windows.com,2
+*,skydrive.wns,windows.com,2
+*,accounts.accesscontrol,windows.net,2
+*,login,windows.net,2
+*,account.activedirectory,windowsazure.com,2
+*,,yammer.com,2
+https,,yearsahead.com,2
+*,extraweb-americas,ey.com,2
+*,extraweb-apac,ey.com,2
+*,extraweb-emea,ey.com,2
+*,extraweb2-americas,ey.com,2
+*,extraweb2-apac,ey.com,2
+*,extraweb2-emea,ey.com,2
+*,gs,ey.com,2
+https,,millionyou.com,2
+*,,yammerusercontent.com,2
+
+
+
+'@
+
+    }
+    catch {
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        Write-Error "Exception Details: $nl$_"
+        throw
+    }
+    Return $script
+}
+
+#################################################################################
+#.SYNOPSIS
+# Return the content to create the .vbs file.
+#
+#.DESCRIPTION
+# This function will return the content of the .vbs file that will be created on the PC.
+#################################################################################
+function Get-VbsFileContent-CU {
+    [CmdletBinding()]
+    param ()
+
+    try {
+
+        #the '@ end tag needs to be on a separate line at the end with no leading spaces.
+        $script = @'
+Set objShell = CreateObject("WScript.Shell")
+sCmd = "powershell.exe -WindowStyle hidden -ep bypass -NonInteractive -NoProfile -File ""<vbsfilename>"""
+objShell.Run(sCmd),0
+
+'@
+
+        $script = $script -replace '<vbsfilename>', "$EYLocalScriptFolder\$EYNameForCU.ps1"
+
+    }
+    catch {
+        Write-Host "An error occurred in $($MyInvocation.MyCommand.Name). $nl$_"
+        Write-Error "Exception Details: $nl$_"
+        throw
+    }
+    Return $script
+}
+
+#################################################################################
+#.SYNOPSIS
+# Sample code of how to set ACLs for registry keys. This also disables inheritance.
+#
+#.DESCRIPTION
+# Sample parameter to pass in "HKLM:\SOFTWARE\Ernst & Young"
+#################################################################################
+function Set-RegistryACL {
+    [CmdletBinding()]
+    param (
+        [parameter(Mandatory=$true)]
+        [String] $AClPath
+    )
+
+    $DisableInheritance = $true
+    $PreserveInheritanceIfDisabled = $true
+
+    #First, remove Inheritance and copy the existing permissions
+    $Acl = Get-Acl $AClPath
+    $Acl.SetAccessRuleProtection($DisableInheritance, $PreserveInheritanceIfDisabled) | Out-Null
+    $Acl | Set-Acl -Path $AClPath
+
+    #Now grant the Users group full control
+    Write-Host "About to set registry permissions for $AClPath"
+    $Acl = Get-Acl $AClPath
+    $AccessRule = New-Object System.Security.AccessControl.RegistryAccessRule("Users","FullControl",@("ContainerInherit","ObjectInherit"),"None","Allow")
+    $Acl.SetAccessRule($AccessRule) | Out-Null
+    $Acl | Set-Acl -Path $AClPath
+    Write-Host "Registry permissions for $AClPath have been set"
+}
+
+#################################################################################
+# Main
+#################################################################################
+Invoke-EYBase

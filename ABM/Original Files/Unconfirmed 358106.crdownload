@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './Wrapper.ps1' -downloadBackup -ProcessName 'EPM_ApplicationBackup'"

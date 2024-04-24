@@ -1,0 +1,108 @@
+﻿<#
+    This script will find all mailboxes with Linked Master Accounts that do not have the user’s UPN from their AD Object in the client’s domain
+#>
+
+cls
+
+### Create & Start the Custom Error Log Files & Transcript Log File
+# Get the scripts current directory
+$script:ScriptPath  = split-path -parent $MyInvocation.MyCommand.Definition 
+# Format the LogFile Timestamp
+$script:TimeStamp    = Get-Date -format "MM_dd_yyyy_hhmmss"
+# Create the Log Folder.
+$LogPath = $ScriptPath + "\Logs" 
+if(!(Test-Path -Path $LogPath)) {New-Item -ItemType directory -Path $LogPath | out-null}
+# Create Custom Error Log File
+$ErrorLogName = "ErrorLog_" + $TimeStamp + ".log"
+$script:ErrorLogFile = $LogPath + "\" + $ErrorLogName
+
+function Write-Log($string,$color) 
+{
+    ### Write Error-Trap messages to the console & the log file.
+    
+    if ($color -eq $null) {$color = "magenta"}
+    write-host $string -foregroundcolor $color
+    "`n`n"  | out-file -filepath $ErrorLogFile -append
+    $string | out-file -filepath $ErrorLogFile -append
+}
+
+### Create Session to Import Exchange Tools
+$ExchangeCAS = (HostName).split("-")[0] + "-htcas01.ecicloud.com"
+### Check for Existing Session
+$SessionID = Get-PSSession | where { $_.ConfigurationName -eq "Microsoft.Exchange"  -and $_.State -eq 'Opened' }
+
+if (!$SessionID) 
+{
+    write-host "Creating New Session"    
+    $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://$ExchangeCAS/PowerShell/ -Authentication Kerberos
+    Import-PSSession $Session -AllowClobber #-ea "silentlycontinue"  
+}
+else
+{
+    write-host "Using Current Session: " $SessionId 
+}
+
+### Create &  Clear the Arrays
+$ClientMailBoxes       = @()
+$NoLinkedMasterAccount = @()
+
+### Get the MailBoxes
+#$OU = "ecicloud.com/clients/R4" 
+$OU = "ecicloud.com/Clients/SchoenerMgmt"
+#$OU = "ecicloud.com/clients" 
+
+
+write-host "Getting mailboxes for: " $OU -ForegroundColor Yellow
+$ClientMailBoxes = Get-Mailbox -OrganizationalUnit $OU -ResultSize unlimited | Where-Object {($_.LinkedMasterAccount -notlike "NT AUTHORITY*") -AND ($_.LinkedMasterAccount -notlike "ECICLOUD\Domain Controllers") -AND ($_ -notlike "S-1-*")}
+
+foreach($MailBox in $ClientMailBoxes)
+{
+    ### Check if a Linked Master Account exists, if it exists then lookup the users UPN in the client domain.
+    if ($MailBox.LinkedMasterAccount)
+    {
+        write-host Getting AD User Account:`t $MailBox.LinkedMasterAccount -ForegroundColor Cyan
+
+        $Domain    = $MailBox.LinkedMasterAccount.split("\")[0]
+        $UserName  = $MailBox.LinkedMasterAccount.split("\")[1]
+        
+        try
+        {
+            #$ADAccount = Get-ADUser -Server $Domain -Identity $UserName
+            $PDC = (Get-ADDomain -Identity $Domain | Select-Object -Property PDCEmulator).PDCEmulator
+            $ADAccount = Get-ADUser -Server $PDC -Identity $UserName
+        }
+        catch
+        {
+            write-log $Error[0] yellow
+            $Error[0] | out-file -filepath $ErrorLogFile -append
+            $Error[0].Exception | out-file -filepath $ErrorLogFile -append
+            $Error[0].ScriptStackTrace  | out-file -filepath $ErrorLogFile -append
+        }
+
+        ### Test to see if the UPN exists in the Mailbox Aliases
+        if(-not($MailBox.EmailAddresses -match $ADAccount.UserPrincipalName))
+        {
+            ### Alert on mailbox
+            $NoLinkedMasterAccount += $MailBox.LinkedMasterAccount
+            write-host "There is no matching UPN associated with the mailbox for: "`t $MailBox.LinkedMasterAccount -ForegroundColor Red
+        }
+        else
+        {
+            write-host "The UPN for acccount $Username is: "`t $ADAccount.UserPrincipalName -ForegroundColor Green 
+        }
+    }
+    else
+    {
+        write-host "This Mailbox Does NOT have A Linked Master Account:"`t $MailBox.DisplayName  -ForegroundColor Yellow
+        Continue
+    }
+}
+
+### Export the Results to Out-File
+write-host "Total Mailboxes Checked: " $ClientMailBoxes.count
+write-host "Mailboxes without Linked Master Accounts: "$NoLinkedMasterAccount.count
+
+
+$LogFile = $ScriptPath + "\Logs\LogFile.txt"
+if ($LogFile){Remove-Item $LogFile | out-null} 
+$NoLinkedMasterAccount | out-file $LogFile -Force

@@ -1,0 +1,5 @@
+is_global = true
+build_property.RootNamespace = CustomModules
+build_property.ProjectDir = C:\Users\brenn\OneDrive\Documents\__Repo\PowerShell\CustomModules\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

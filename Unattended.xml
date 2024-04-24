@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--XSR W10 Speedup NONProd-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+  <settings pass="specialize">
+    <component name="Microsoft-Windows-UnattendedJoin" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <Identification>
+        <Credentials>
+          <Username>
+          </Username>
+          <Domain>
+          </Domain>
+          <Password>
+          </Password>
+        </Credentials>
+        <JoinDomain>
+        </JoinDomain>
+        <JoinWorkgroup>
+        </JoinWorkgroup>
+        <MachineObjectOU>
+        </MachineObjectOU>
+      </Identification>
+    </component>
+    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <ComputerName>
+      </ComputerName>
+      <RegisteredOrganization>TJX</RegisteredOrganization>
+      <RegisteredOwner>TJX User</RegisteredOwner>
+      <DoNotCleanTaskBar>true</DoNotCleanTaskBar>
+      <TimeZone>Eastern Standard Time</TimeZone>
+      <ProductKey>M7XTQ-FN8P6-TTKYV-9D4CC-J462D</ProductKey>
+    </component>
+    <component name="Microsoft-Windows-IE-InternetExplorer" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <Home_Page>about:blank</Home_Page>
+    </component>
+    <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Description>disable user account page</Description>
+          <Order>1</Order>
+          <Path>reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Setup\OOBE /v UnattendCreatedUser /t REG_DWORD /d 1 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Description>disable async RunOnce</Description>
+          <Order>2</Order>
+          <Path>reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Explorer /v AsyncRunOnce /t REG_DWORD /d 0 /f</Path>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <Description>Remove Static IP Log</Description>
+          <Order>3</Order>
+          <Path>cmd /c del C:\TJXLogs\staticip.log /s /q</Path>
+        </RunSynchronousCommand>
+      </RunSynchronous>
+    </component>
+    <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <InputLocale>0409:00000409</InputLocale>
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+    <component name="Microsoft-Windows-SystemRestore-Main" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <DisableSR>1</DisableSR>
+    </component>
+  </settings>
+  <settings pass="oobeSystem">
+    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <AutoLogon>
+        <Enabled>true</Enabled>
+        <Username>Cambridge</Username>
+        <Domain>.</Domain>
+        <Password>
+          <Value>QQB0ADEAQwB5ADIAQAAhAEAAUABhAHMAcwB3AG8AcgBkAA==</Value>
+          <PlainText>false</PlainText>
+        </Password>
+        <LogonCount>999</LogonCount>
+      </AutoLogon>
+      <FirstLogonCommands>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>Powershell -EP BYPASS -f C:\Staging\Set-Drive-Letters\Set-Drive-Letters.ps1</CommandLine>
+          <Description>Apply Drive Letters</Description>
+          <Order>1</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>Powershell -EP BYPASS -f C:\Staging\Hide_P_Drive\Hide_P_Drive.ps1</CommandLine>
+          <Description>Hide P Drive</Description>
+          <Order>2</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>Powershell -EP BYPASS -f C:\Staging\Set_Pagefile_v2\Set_Pagefile_v2.ps1</CommandLine>
+          <Description>Set Page File</Description>
+          <Order>3</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>C:\Staging\vnc\install\config.cmd</CommandLine>
+          <Description>Register VNC</Description>
+          <Order>4</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c wmic useraccount where name='Guest' rename 'SysTaskG'</CommandLine>
+          <Description>Rename Guest</Description>
+          <Order>5</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c wmic useraccount where name='Administrator' rename 'SysTaskA'</CommandLine>
+          <Description>Rename Admin</Description>
+          <Order>6</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c Powershell -EP BYPASS -f "C:\Staging\TJX_Sysprep_Files\CleanUp_MDT.ps1"</CommandLine>
+          <Description>Clean up MDT Files</Description>
+          <Order>7</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c powershell -ep bypass add-localgroupmember -group 'Remote Desktop Users' -member "possat"</CommandLine>
+          <Description>Add Possat to RDP Group</Description>
+          <Order>8</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c copy "C:\staging\NonProd_Tools\SetNTPServer_NonProd.ps1"  "D:\Program Files\Util\SetNTPServer.ps1" /y</CommandLine>
+          <Description>Copy Non Prod Time Synch script</Description>
+          <Order>9</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c rmdir C:\Staging\TJX_Sysprep_Files /s /q</CommandLine>
+          <Description>Remove TJX Sysprep Files</Description>
+          <Order>10</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c Powershell -EP BYPASS -f "C:\Staging\Hardware\Engage_Serial\Engage_Serial.ps1"</CommandLine>
+          <Description>Set Enage Ports</Description>
+          <Order>11</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c Powershell -EP BYPASS -f "C:\Staging\Hardware\LineDisplay_220_920\LineDisplay_220_920.ps1"</CommandLine>
+          <Description>Set Pole Display Ports</Description>
+          <Order>12</Order>
+        </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <CommandLine>cmd /c Powershell -EP BYPASS -f "P:\Backup\SetIPinfo.ps1"</CommandLine>
+          <Description>Import IP config</Description>
+          <Order>13</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>14</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>15</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>16</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>17</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>18</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>19</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>IPConfig.ps1</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>20</Order>
+        </SynchronousCommand>
+        <SynchronousCommand action="add" xmlns="">
+          <CommandLine>cmd /c YourCommandHere</CommandLine>
+          <Description>YourDescriptionHere</Description>
+          <Order>21</Order>
+        </SynchronousCommand>
+      </FirstLogonCommands>
+      <OOBE>
+        <HideLocalAccountScreen>true</HideLocalAccountScreen>
+        <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+        <ProtectYourPC>1</ProtectYourPC>
+      </OOBE>
+    </component>
+    <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <InputLocale>0409:00000409</InputLocale>
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+    </component>
+  </settings>
+  <settings pass="generalize">
+    <component name="Microsoft-Windows-Security-SPP" processorArchitecture="wow64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="NonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <SkipRearm>1</SkipRearm>
+    </component>
+  </settings>
+  <cpi:offlineImage cpi:source="wim://mdt146/xstore-1703/operating%20systems/w10_ltsc_dec2020_patch/w10_ltsc_dec2020_patch.wim#C" xmlns:cpi="urn:schemas-microsoft-com:cpi" />
+</unattend>

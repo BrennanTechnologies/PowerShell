@@ -1,0 +1,55 @@
+
+Microsoft (R) Windows (R) Operating System Group Policy Result tool v2.0
+c Microsoft Corporation. All rights reserved.
+
+Created on ?12/?5/?2023 at 8:16:23 PM
+
+
+
+RSOP data for ASUS-MAIN\brenn on ASUS-MAIN : Logging Mode
+----------------------------------------------------------
+
+OS Configuration:            Standalone Workstation
+OS Version:                  10.0.22621
+Site Name:                   N/A
+Roaming Profile:             N/A
+Local Profile:               C:\Users\brenn
+Connected over a slow link?: No
+
+
+
+
+USER SETTINGS
+--------------
+    
+    Last time Group Policy was applied: 11/24/2023 at 11:03:18 AM
+    Group Policy was applied from:      N/A
+    Group Policy slow link threshold:   500 kbps
+    Domain Name:                        ASUS-MAIN
+    Domain Type:                        <Local Computer>
+    
+    Applied Group Policy Objects
+    -----------------------------
+        N/A
+
+    The following GPOs were not applied because they were filtered out
+    -------------------------------------------------------------------
+        Local Group Policy
+            Filtering:  Not Applied (Empty)
+
+    The user is a part of the following security groups
+    ---------------------------------------------------
+        High Mandatory Level
+        Everyone
+        Local account and member of Administrators group
+        BUILTIN\Users
+        BUILTIN\Administrators
+        NT AUTHORITY\INTERACTIVE
+        CONSOLE LOGON
+        NT AUTHORITY\Authenticated Users
+        This Organization
+        brennanc@hotmail.com
+        Local account
+        LOCAL
+        Cloud Account Authentication
+        

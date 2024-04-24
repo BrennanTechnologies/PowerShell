@@ -1,0 +1,9 @@
+
+https://app.pluralsight.com/library/
+
+username: devops.all@abacusgroupllc.com
+
+Name                           Value
+----                           -----
+password                       c0deB@se
+username                       devops.all@abacusgroupllc.com

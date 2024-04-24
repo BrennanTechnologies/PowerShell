@@ -1,0 +1,1155 @@
+
+#region Document Properties
+<###############################################################################################################################
+ .DESCRIPTION
+            
+            This script automates the installation of Windows 2008 R2 and 20122 R2 Roles & Features, and also configures various componants.
+ 
+.FILENAME
+            ServerConfigRBSHv_x.x.ps1
+
+.INPUTS
+            None
+
+.OUTPUTS
+            Log file stored in $LogPath + "\" + $LogName
+            Transcript Log stored in $LogPath + "\" + $TranscriptLogName
+ 
+.AUTHORS
+            Chris Brennan       Chris_Brennan@mckinsey.com
+
+.REQUIRES   PowerShell V2.0 for 2008 R2
+            PowerShell V4.0 for 2012 R2
+
+.VERSIONS
+            -- V1.0 Original script development
+            -- V2.0 Converted the script to utilize functions throughout
+            -- v3.0 Current Development version
+           
+.NOTES
+            -- If compiling this script with PowerGUI, it is importsant to compile it with .Net Framework 3.5 for it to work with Windows 2008R2.
+
+
+.NEW CHANGES: 
+
+
+
+##############################################################################################################################>
+#endregion
+
+#region TODO
+<#TODO 
+
+    -- Disable Firewall not throwing error
+
+    -- Add Try/Catch for NETBIOS
+    
+    -- Put IPv4 and IPv6 into try/catch funtion
+    
+    -- Check Last several SNMP commands
+                Checking if HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\RFC1156Agent\ sysServices exits:
+	             RegKey exists: HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\RFC1156Agent\ -name 'sysServices'
+            Setting REGKEY 
+            Checking if HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\ mckreed exits:
+	             RegKey exists: HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\ -name 'mckreed'
+            Setting REGKEY Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\RFC1156Agent\ sysServices -Value 73
+            Checking if HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\ mckright exits:
+	             RegKey exists: HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\ -name 'mckright'
+            Setting REGKEY Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\ mckreed -Value 4
+            
+ 
+    -- FINAL CHECK LIST of ALL CONFIGS
+    -- Set Execution Policy Batch File
+
+#>
+#endregion
+
+#region Script Initialization
+
+#$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+#. $scriptpath\SetupInclude.ps1
+
+### ========================================== *** [Begin Initialisations] *** ======================================================
+
+cls
+
+### Force the declaration of variables (aviod errors from typos)
+#Set-PSDebug -Strict 
+
+### Clears the $Error array, and suppresses the output. 
+$Error.clear() | out-null
+
+### Set the Default Error Action, this allows the Try/Catch funtion to work on non-Terminating errors.
+$ErrorActionPreference = "Stop"
+
+### ========================================= *** [End of Initialisations] *** ======================================================
+
+
+### =========================================== *** [Begin Declarations] *** ========================================================
+
+### Set the Script Information.
+$ServerName        = $env:COMPUTERNAME
+$ScriptName        = $MyInvocation.MyCommand.Name
+$ScriptVersion     = "v.D.4.3"
+
+## Use this method to get $ScriptPath if compliling to .EXE
+$ScriptPath = [System.AppDomain]::CurrentDomain.BaseDirectory
+if ($ScriptPath -eq $PSHOME)
+{
+    $ScriptPath = $PSScriptRoot
+}
+
+### $MyInvocation.MyCommand does not work if script is compiled to an .EXE
+#$ScriptFullPath   = $MyInvocation.MyCommand.Definition
+#$ScriptPath       = $ScriptFullPath.Replace($ScriptName, "")
+#$ScriptPath = [System.IO.Path]::GetDirectoryName($myInvocation.MyCommand.Definition)
+
+### Declare Script Variables.
+$nICIPEnabled      = Get-WMIObject -class Win32_NetworkAdapterConfiguration | Where-Object {$_.IPEnabled -eq "True"}
+$nICName           = Get-WmiObject -class Win32_NetworkAdapter
+$guid              = $nICIPEnabled.SettingID 
+$globalUniqueID    = $NICName.GUID
+$localConnectionID = $NICName.NetConnectionID
+$serverOS          = Get-WMIObject -class Win32_OperatingSystem
+
+### Get Server OS Version
+$serverOS.version -match "(\d{1,1})\.(\d{1,1})\.(\d{1,4})" | out-null
+
+### Get local subnet
+$nICIPEnabled.IPAddress -match "(\d{1,3})\.(\d{1,3})\." | out-null
+
+### Setup the Log Files. The Error log writes the error trap messages caught from the Try/Catch blocks.
+$LogPath           = $ScriptPath  # or manually set. i.e  "C:\Logs"
+if(!(Test-Path -Path $LogPath)) {New-Item -ItemType directory -Path $LogPath | out-null}
+$LogTimeStamp      = Get-Date -format "MM_dd_yyyy_hhmm"
+$ErrorLogName      = $ServerName + "_Config_Error_Log_" + $LogTimeStamp + ".log"
+$ErrorLogFile      = $LogPath + "\" + $ErrorLogName
+
+### Setup the Transcript Log. The Transaction Log writes all of the internal PowerShell messages generated while running the script.
+$TranscriptLogName = $ServerName + "_Config_Transcript_Log_" + $LogTimeStamp + ".log"
+$TranscriptLogFile = $LogPath + "\" + $TranscriptLogName
+
+### Script Start/Stop times for calulating toal run time.
+$StartTime         = Get-Date #-Format "dd/MM/yyyy HH:mm:ss" 
+
+### Log Formatting Strings
+$fmtHeaderString   = "*" * 100 
+$fmtErrorLogString = "-" * 50 
+$fmtExecuteMsg     = "*** Executing function: "
+$fmtNoErrorMsg     = "`t *** No error occured Executing function: "
+
+function fcnWriteFunctionName
+{
+    ### Write the currently executing function to the console and log file.
+    $msg = $fmtExecuteMsg + $functionName
+    fcnWriteLog $msg cyan
+}
+
+### ========================================== *** [End of Initializations] *** ======================================================
+
+
+### ============================================ *** [Begin Script Config] *** =======================================================
+
+function fcnStartTranscriptLog
+### The Transcript log records all internal PowerShell console output.
+{
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    if ($Host.Name -eq "ConsoleHost")
+    {
+        start-transcript -path $TranscriptLogFile
+    }
+    else
+    {
+        fcnWriteLog "`t Running from PS ISE.. No Transcript Log will be generated" red
+    }
+}
+
+function fcnStopTranscriptLog
+### Stop the Transcript Log
+{
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    if ($Host.Name -eq "ConsoleHost")
+    {
+        fcnWriteLog "Stopping PS Transcript Log" 
+        Stop-transcript
+    }
+}
+
+function fcnWriteLog($string,$color) 
+{
+    ### This function writes custom fcnErrorTrap messages from the $error array to the console & the log file.
+    ### Color Coding:
+    ### Cyan    = What function is running
+    ### Green   = Good - No Errors
+    ### Red     = Bad - An Error Occured
+    ### White   = PowerShell Console Output
+    ### Magenta = Default color
+
+    if ($Color -eq $null) {$color = "magenta"}
+    write-host $string -foregroundcolor $color
+    "`n`n"  | out-file -filepath $ErrorLogFile -append
+    $string | out-file -filepath $ErrorLogFile -append
+}
+
+function fcnWriteLogHeader
+### Writes header information to the ErrLog file.
+{   
+    fcnWriteLog  $fmtHeaderString
+    fcnWriteLog "Script Started on $StartTime"
+    fcnWriteLog $ServerName.ToUpper()
+    fcnWriteLog "Running Script: $ScriptName"
+    fcnWriteLog "Script Version: $ScriptVersion"
+    fcnWriteLog "Script Location: $ScriptFullPath"
+	fcnWriteLog "Server Name: $ServerName"
+    fcnWriteLog  $fmtHeaderString
+    fcnWriteLog "`n"
+}
+
+function fcnYesNoExit
+### Check for a Tes/No answer, and loop if it doesnt get a 'Y' or an 'N'
+{
+    function fcnCheckResponse
+    {
+        write-host -nonewline "(Y/N?)" -ForegroundColor white
+        $response = read-host
+
+        if ($response -eq "Y") 
+        {
+            fcnWriteLog "Exiting script execution . . . " White
+            exit
+        }
+        elseif ($response -eq "N")
+        {
+            fcnWriteLog "Contining script execution . . . " White
+        }
+        elseif (($response -ne "Y") -or ($response -ne "N"))
+        {
+            Write-Host "You did not enter Y or N!" -ForegroundColor White
+            fcnYesNoExit
+        }
+    }
+    fcnCheckResponse
+}
+
+
+function fcnErrorTrap
+### Traps the current error message from the $Error array and writes it to the $ErrorLog file.
+{
+    fcnWriteLog "$`t **** ERROR: **** Error executing the function: $functionName ****" red
+    fcnWriteLog $Error[0] red
+    fcnWriteLog $Error[0].Exception red
+    fcnWriteLog $Error[0].ScriptStackTrace red
+    fcnWriteLog "$`t **** END Error Messsage from function $functionName ****" red
+}
+
+
+function fcnTryCatch($scriptBlock)
+### Define the Try/Catch function to trap errors and write to log & console.
+{
+    try
+    {
+        Invoke-Command -ScriptBlock $scriptBlock
+        #Start-Job -ScriptBlock $scriptBlock
+    }
+    
+    catch
+    {
+        fcnErrorTrap
+    }
+    
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+}
+
+### ============================================ *** [End Script Config] *** =========================================================
+#endregion
+
+
+#region Begin Function Definitions
+### ======================================== *** [Begin Function Definitions] *** ====================================================
+
+
+### --------------------------------------------- Check for required files -----------------------------------------------------------
+
+function fcnCheckforRequiredlFiles
+{
+    ### This function checks for any files that are required by the script.
+    
+    fcnWriteLog "Checking for requiried files." yellow
+
+#    $FireWallFile = 'BaseWin2k8R2FW(v2.x).wfw'
+#    $PrintDrvFile = 'DefaultPrintDrivers.PrinterExport'
+
+    $RequiredFiles  = @()
+    $RequiredFiles += 'BaseWin2k8R2FW(v2.x).wfw'
+    $RequiredFiles += 'DefaultPrintDrivers.PrinterExport'
+    $RequiredFiles += 'NonExistantFile'
+    
+    foreach ($RequiredFile in $RequiredFiles)
+    {
+        ### Check for if each file exists.
+        #$RequiredFile = $ScriptPath + $RequiredFile
+        fcnWriteLog "`t Checking for $RequiredFile" 
+
+        ### All required files are called from the path that the script if in.
+        #$RequiredFilePath = $ScriptPath + $RequiredFile
+        $RequiredFilePath = $ScriptPath + $RequiredFile
+        $RequiredFilePath
+        
+        If((Test-Path -Path $RequiredFilePath) -ne $false) 
+        {
+            fcnWriteLog "`t`t $RequiredFile Exists!" green
+        }
+    
+        else
+        {
+            fcnWriteLog "`t`t The $RequiredFile file does not exist" red
+            fcnWriteLog "The required files must reside in the root folder from where the script is running... $ScriptPath" white
+            Write-Host -nonewline "Press 'Y' to exit and copy the required files or 'N' to continue the script. " -foregroundcolor white
+            fcnYesNoExit
+        }
+    }
+}
+
+
+### ----------------------------------------------- Import FireWall Rules ------------------------------------------------------------
+
+function fcnWindowsFirewallRules
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+	    ###  The Base Firewall Rule is imported but all Profiles are Disabled.  The Policy is imported here in the event that we'll enable it
+	    ###  at a later date.
+
+	    ###  New in v2.0 - Includes the base firewall rule along with the inclusion of port 8090 for webdeploy (Joe)
+	    ###  Configures the Default Public and Work/Private Firewall Rules
+	    ###  The second command will disable All Profiles (Domain, Private & Public) will be Disabled based off of the Security Guide Lines
+	    ###  The following command will leave the Windows Firewall Service Enabled but it will Disable all of the Profiles
+
+		### Import Windows Advanced Firewall configuration file.
+        $file = $ScriptPath + 'BaseWin2k8R2FW(v2.x).wfw'
+        $cmd = "Netsh advfirewall import $file"
+        Invoke-Expression -command $cmd -ErrorAction Stop
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+
+}
+
+
+### ---------------------------------------------- Disable Windows Firewall ----------------------------------------------------------
+
+function fcnDisableWindowsFirewall
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+    
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        ### Disable Windows Adv Firewall
+        $cmd = "Netsh advfirewall set allprofiles state off"
+        Invoke-Expression -Command $cmd -ErrorAction Stop
+    	
+        ### Alternate method using PS v4.0 cmdlet
+		# Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled false
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+}
+
+
+### ---------------------------------------------- Install 2008 R2 Features ----------------------------------------------------------
+
+function fcnWin2k8R2Features
+{
+    ### Write the currently executing function to the console and log file.
+    fcnWriteLog "Installing Features for Windows 2008 R2" yellow
+
+    #Adds all of the Standard Roles and Features to Windows 2008 R2 Server(s) including: The File Services Role, DNS, .NET Framework,
+    #DHCP, Print Services, SNMP Service, Powershell-ISE, the Remote Desktop Tools/Management utilities, and Backup tools
+    $fcnWin2k8R2Features =  @()
+    $fcnWin2k8R2Features += "Import-Module ServerManager"
+    $fcnWin2k8R2Features += "Add-WindowsFeature FS-FileServer"
+    $fcnWin2k8R2Features += "Add-WindowsFeature FS-Resource-Manager"
+    $fcnWin2k8R2Features += "Add-WindowsFeature DHCP"
+    $fcnWin2k8R2Features += "Add-WindowsFeature DNS"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Print-Services"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Print-Server"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Print-LPD-Service"
+    $fcnWin2k8R2Features += "Add-WindowsFeature NET-Framework-Core"
+    $fcnWin2k8R2Features += "Add-WindowsFeature RSAT-RDS-Conn-Broker"
+    $fcnWin2k8R2Features += "Add-WindowsFeature SNMP-Services"
+    $fcnWin2k8R2Features += "Add-WindowsFeature SNMP-WMI-Provider"
+    $fcnWin2k8R2Features += "Add-WindowsFeature PowerShell-ISE"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Server"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-App-Dev"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Log-Libraries"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Basic-Auth"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Windows-Auth"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Scripting-Tools"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Mgmt-Service"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Web-Mgmt-Compat"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Backup"
+    $fcnWin2k8R2Features += "Add-WindowsFeature Backup-Tools"
+    $fcnWin2k8R2Features += "Add-WindowsFeature RSAT-RDS-RemoteApp"
+    
+    foreach ($Feature in $fcnWin2k8R2Features)
+    {
+		try
+        {
+            fcnWriteLog $fmtExecuteMsg$functionName$Feature cyan
+            Invoke-Expression -command $Feature
+        }
+		catch
+        {
+            fcnErrorTrap $ErrorMsg$Feature
+         
+        }
+        if (!$Error)
+        { 
+            $NoErrorMsg = $fmtNoErrorMsg + $functionName
+            fcnWriteLog  $NoErrorMsg green
+        }
+    }
+}
+
+
+### ---------------------------------------------- Install 2012 R2 Features ----------------------------------------------------------
+
+function fcnWin2012R2Features
+{
+    ### Write the currently executing function to the console and log file.
+    fcnWriteLog "Installing Features for Windows 2012 R2" yellow
+
+    #Adds all of the Standard Roles and Features to Windows 2012 R2 Server(s).
+    $fcnWin2012R2Features =  @()
+    $fcnWin2012R2Features += "Add-WindowsFeature RSAT-ADDS-Tools"
+    $fcnWin2012R2Features += "Add-WindowsFeature FS-FileServer"
+    $fcnWin2012R2Features += "Add-WindowsFeature FS-Resource-Manager"
+    $fcnWin2012R2Features += "Add-WindowsFeature RSAT-FSRM-Mgmt"
+    $fcnWin2012R2Features += "Add-WindowsFeature DHCP"
+    $fcnWin2012R2Features += "Add-WindowsFeature RSAT-DHCP"
+    $fcnWin2012R2Features += "Add-WindowsFeature DNS"
+    $fcnWin2012R2Features += "Add-WindowsFeature RSAT-DNS-Server"
+    $fcnWin2012R2Features += "Add-WindowsFeature Print-Services"
+    $fcnWin2012R2Features += "Add-WindowsFeature Print-Server"
+    $fcnWin2012R2Features += "Add-WindowsFeature Print-LPD-Service"
+    $fcnWin2012R2Features += "Add-WindowsFeature RSAT-Print-Services"
+    $fcnWin2012R2Features += "Add-WindowsFeature NET-Framework-Core"
+    $fcnWin2012R2Features += "Add-WindowsFeature SNMP-Service"
+    $fcnWin2012R2Features += "Add-WindowsFeature PowerShell"
+    $fcnWin2012R2Features += "Add-WindowsFeature PowerShell-ISE"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Server"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Mgmt-Console"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-App-Dev"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Log-Libraries"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Basic-Auth"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Windows-Auth"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Scripting-Tools"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Mgmt-Service"
+    $fcnWin2012R2Features += "Add-WindowsFeature Web-Mgmt-Compat"
+
+    foreach ($Feature in $fcnWin2012R2Features)
+    {
+		try
+        {
+            $ExecMsg = $ExecutMsg + $Feature 
+            fcnWriteLog $ExecMsg cyan
+            Invoke-Expression -command $Feature
+        }
+		catch
+        {
+            fcnErrorTrap $ErrorMsg $Feature 
+        }
+        if (!$Error) 
+        {
+            $NoErrorMsg = $fmtNoErrorMsg + $functionName
+            fcnWriteLog  $NoErrorMsg green
+        }
+    }
+}
+
+### -------------------------------------------------- Disable EDns for W2k12R2 -----------------------------------------------------------------
+
+function fcnSetEDns_W2k12R2
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        ### This command Disables or Enables the server to probe other servers to determine whether they support EDNS.
+		fcnWriteLog "Diabling EDns" cyan
+        Set-DnsServerEDns -EnableProbes 0
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+}
+
+### -------------------------------------------------- Disable EDns for W2k8R2 -----------------------------------------------------------------
+
+function fcnSetEDns_W2k8R2
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        ### This command Disables or Enables the server to probe other servers to determine whether they support EDNS.		
+        fcnWriteLog "Diabling EDns" cyan
+        $cmd = "dnscmd . /config /enableednsprobes 0"
+        Invoke-Expression -command $cmd
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+}
+
+### -------------------------------------------------- Configure DNS -----------------------------------------------------------------
+function fcnDNSConfiguration
+{
+### This function configures the Default DNS Server (Settings and the Firm Standard Conditional Forwarders list) 
+    
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### ------------ Set Local Office Zone -------------
+    function fcnSetLocalOfficeZone
+    ### Function to create the local offfice zone.
+    {
+        $functionName = $MyInvocation.MyCommand.name
+        fcnWriteFunctionName
+
+        ### ------------ Prompt for local office code -------------
+	    function fcnLocalOfficeCode
+        {
+            ### Read-Host prompts for the variable in the PowerShell "Command Line"
+            $OfficeCode = Read-Host "Please enter your 3 digit local office code i.e 'NYC'"
+        
+            if([string]::IsNullOrEmpty($OfficeCode)) 
+            {            
+                Write-Host "You did not enter a local office code"
+                fcnLocalOfficeCode 
+            }
+            else 
+            {            
+                try
+                {
+		            fcnWriteLog "`t Setting local office zone $OfficeCode." cyan
+                    $OfficeCode = "$OfficeCode.mckinsey.com"
+                    dnscmd $ServerName /zoneadd $OfficeCode /secondary 156.109.176.244
+                }
+
+                catch
+                {
+                    fcnErrorTrap
+                    fcnWriteLog "There was an error in $functionName, please try again." Yellow
+                    fcnLocalOfficeCode
+                }
+            }
+        }
+
+        fcnLocalOfficeCode
+    }
+    ### Run the function
+    fcnSetLocalOfficeZone
+
+
+    ### ------------ Create/Config DNS Records -------------
+    function fcnConfigureDNSRecord 
+    ### Function to create regional DNS Zones.
+    {
+        ### Index in to DNSZones array for the region.
+        $ZoneName         = $NewDNSZone[0]
+        $MasterServer1    = $NewDNSZone[1]
+        $MasterServer2    = $NewDNSZone[2]
+        $MasterServer3    = $NewDNSZone[3]
+        $MasterServer4    = $NewDNSZone[4]
+
+        ### Method 1: Uses PowerShell cmdlets
+        # Add-DnsServerConditionalForwarderZone -Name $DNSZone.0 -ReplicationScope "Forest" -MasterServers $DNSZone.1,$DNSZone.2,$DNSZone.3,$DNSZone.4,$DNSZone.5
+	    
+
+	    ### Method 2: Uses dnscmd command
+        $cmdAddZone = "dnscmd $ServerName /ZoneAdd $ZoneName /forwarder $MasterServer1 $MasterServer2 $MasterServer3 $MasterServer4"
+        Write-Host "Running the following command: $cmdAddZone" -ForegroundColor Cyan
+	    Invoke-Expression -command $cmdAddZone
+    }
+
+    
+    ### This section creates Conditional Forwarders for the core Zones.  These entries are required!
+	if ($NICIPEnabled.IPAddress -match "157.191.")
+	{ 
+        # Create an array of regional DNS Zones		
+        $region = "Americas"
+		fcnWriteLog "Configuring DNS Conditional Forwarders for Zone: $region" yellow
+		
+		$NewDNSZones   = @()
+		$NewDNSZones   = ,("mckinsey.com","157.191.19.250","156.109.27.131","156.107.74.100","157.191.169.71","156.109.176.244")
+		$NewDNSZones  += ,("191.157.in-addr.arpa","157.191.169.71","156.109.176.244")
+		$NewDNSZones  += ,("109.156.in-addr.arpa","156.109.176.244","157.191.169.71")
+		$NewDNSZones  += ,("107.156.in-addr.arpa","156.107.74.71","157.191.169.71")
+		$NewDNSZones  += ,("esurveydesigns.com","156.109.176.244","157.191.169.71")
+		$NewDNSZones  += ,("epsm.net","156.107.74.81","156.107.74.71","157.191.125.136")
+		$NewDNSZones  += ,("dev-int.mso.local","156.109.215.197","156.109.215.198")
+		$NewDNSZones  += ,("ohi-survey.com","156.109.215.197","156.109.215.198")
+		$NewDNSZones  += ,("mckinseyacademy.com","","157.191.169.71","156.109.176.244","156.107.74.71")
+		$NewDNSZones  += ,("solutions.mckinsey.com","209.244.0.3")
+		$NewDNSZones  += ,("amazon.cn","8.8.8.8")
+		$NewDNSZones  += ,("news.qq.com","8.8.8.8")
+		$NewDNSZones  += ,("sina.com.cn","8.8.8.8")
+		$NewDNSZones  += ,("weibo.com","8.8.8.8")
+	}
+	
+	elseif ($NICIPEnabled.IPAddress -match "156.109.")
+	{
+		# Create an array of regional DNS Zones
+		$region = "Europe"
+		fcnWriteLog "Configuring DNS Conditional Forwarders for Zone: $region" yellow
+
+		$NewDNSZones  = @()
+		$NewDNSZones  = @("Mckinsey.com","156.109.27.131","157.191.19.250","156.107.74.100","156.109.176.244","157.191.169.71")
+		$NewDNSZones += ("191.157.in-addr.arpa","156.109.176.244","157.191.169.71")
+		$NewDNSZones += ("109.156.in-addr.arpa","156.109.176.244","157.191.169.71")
+		$NewDNSZones += ("107.156.in-addr.arpa","156.109.176.244","157.191.169.71")
+		$NewDNSZones += ("esurveydesigns.com","156.109.176.244","157.191.169.71")
+		$NewDNSZones += ("epsm.net","156.107.74.81 156.107.74.71","157.191.125.136")
+		$NewDNSZones += ("dev-int.mso.local","156.109.215.197","156.109.215.198")
+		$NewDNSZones += ("mckinseyacademy.com","156.109.176.244","157.191.169.71156.107.74.71")
+		$NewDNSZones += ("ohi-survey.com","156.109.215.197","156.109.215.198")
+		$NewDNSZones += ("solutions.mckinsey.com","209.244.0.3")
+	}
+	
+	elseif ($NICIPEnabled.IPAddress -match "156.107.")
+	{
+		# Create an array of regional DNS Zones
+		$region = "Asia-Pacific"
+		fcnWriteLog "Configuring DNS Conditional Forwarders for Zone: $region" yellow
+
+		$NewDNSZones  = @()
+		$NewDNSZones  = @("mckinsey.com","156.107.74.100","157.191.19.250","157.191.169.71","156.109.27.131","156.109.176.244")
+		$NewDNSZones += ("191.157.in-addr.arpa","156.107.74.71","157.191.169.71")
+		$NewDNSZones += ("109.156.in-addr.arpa","156.107.74.71","157.191.169.71")
+		$NewDNSZones += ("107.156.in-addr.arpa","156.107.74.71","157.191.169.71")
+		$NewDNSZones += ("esurveydesigns.com","156.107.74.71","157.191.169.71")
+		$NewDNSZones += ("epsm.net","156.107.74.81","156.107.74.71","157.191.125.136")
+		$NewDNSZones += ("dev-int.mso.local","156.109.215.197","156.109.215.198")
+		$NewDNSZones += ("ohi-survey.com","156.107.74.71","156.109.215.198")
+		$NewDNSZones += ("mckinseyacademy.com","156.107.74.71","157.191.169.71")
+		$NewDNSZones += ("solutions.mckinsey.com","209.244.0.3")
+		$NewDNSZones += ("amazon.cn","8.8.8.8")
+		$NewDNSZones += ("news.qq.com","8.8.8.8")
+		$NewDNSZones += ("sina.com.cn","8.8.8.8")
+		$NewDNSZones += ("weibo.com","8.8.8.8")
+	}
+
+	foreach ($NewDNSZone in $NewDNSZones)
+	{
+		try
+		{
+			fcnConfigureDNSRecord
+		}
+		catch
+		{
+			fcnErrorTrap
+		}
+		if (!$Error) 
+		{
+            $NoErrorMsg = $fmtNoErrorMsg + $functionName
+            fcnWriteLog  $NoErrorMsg green
+		}
+	}
+}
+
+
+### ------------------------------------------- Configure 2008 R2 IPv4 & IPv6 --------------------------------------------------------
+
+function fcnWin2k8IPv4Config
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### ------------------------------------------------------ IPv6 --------------------------------------------------------------------------------
+    try
+    {
+
+        ###  New - Disables TCPIPv6 within the Registry
+        ###  These commands will create a new Reg DWORD32 called DisabledComponents and then set the value to ffffffff
+        
+        $NewHKLMString = '"HKLM:\SYSTEM\CurrentControlSet\services\TCPIP6\Parameters\" -Name "DisabledComponents" -propertytype "DWord"'
+        
+        ### Check if key already exists.
+        $exists = Test-Path $NewHKLMString
+
+        if ($exists -eq $false)
+	    {
+		    fcnWriteLog "`t REGKEY DOES NOT EXIST: $NewHKLMString" green
+            fcnWriteLog "`t CREATING REGKEY:       $NewHKLMString" green
+            $NewKey = "New-ItemProperty $NewHKLMString"
+            Invoke-Expression -command $NewKey
+	    }
+        catch
+        {
+            fcnErrorTrap
+        }
+	    else
+	    {
+            fcnWriteLog "`t RegKey already exists: $NewHKLMString" green
+	    }
+        
+        ### Set the New Key property
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\services\TCPIP6\Parameters\" -Name "DisabledComponents" -Value "0xffffffff"
+
+    }
+    catch
+    {
+        fcnErrorTrap
+    }
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+
+    ### ------------------------------------------------------- IPv4 --------------------------------------------------------------------------------
+    try
+    {
+        #Configures the Default TCPIP IP v4 Parameters
+        #Sets DNS Suffix for the primary Network Adapter, Sets DNS Suffix Searches to: ads.mckinsey.com & mckinsey.com
+        #Also Sets the Register this connections' address in DNS on, and Enables DNS suffix in DNS, and Disables LMHOSTS
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid" -Name "Domain" -Value "ads.mckinsey.com" 
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\" -Name "Searchlist" -Value "ads.mckinsey.com,mckinsey.com"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid\" -Name "RegistrationEnabled" -Value "1"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\TCPIP\Parameters\Interfaces\$guid\" -Name "RegisterAdapterName" -Value "1"
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\NetBT\Parameters\" -Name "EnableLMHOSTS" -Value "0"
+    }
+    catch
+    {
+        fcnErrorTrap
+    }
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+
+    ### ----------------------------------------------------- NETBIOS -------------------------------------------------------------------------------
+    try
+    {
+        ###  Disabled NetBIOS on all Network Interfaces using the PowerShell cmdlet Get-WmiObject and settcpipnetbios method.
+        ###  A value of 1 for settcpipnetbios enables it, and 2 disables it. 0 is to use the DHCP default.
+        ### This uses the PS Get-WmiObject cmdlet
+        $adapter=(Get-WmiObject -computer $ServerName win32_networkadapterconfiguration | where {$_.servicename -like "vmxnet*"})
+        $adapter.settcpipnetbios(2)
+        
+        ###  This script utilitizes the external WMIC (Windows Management Intrumentation Command-line to change the TcpipNetbiosOptions
+        # wmic nicconfig where TcpipNetbiosOptions=0 call SetTcpipNetbios 2
+        # wmic nicconfig where TcpipNetbiosOptions=1 call SetTcpipNetbios 2
+    }
+    catch
+    {
+        fcnErrorTrap
+    }
+    if (!$Error) 
+    {
+        $NoErrorMsg = $fmtNoErrorMsg + $functionName
+        fcnWriteLog  $NoErrorMsg green
+    }
+}
+
+
+### ------------------------------------------------ Set Page File Size --------------------------------------------------------------
+
+function fcnSetPageFileSize
+{    
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        #Configures the Default PageFile Size on the Server
+        #Disables the "Automatically manage paging file size for all disks and sets a custom page file size of 6142 
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\" -Name "PagingFiles" -Value "c:\pagefile.sys 6142 6142" 
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+}
+
+
+### --------------------------------------------- Configure Remote Desktop -----------------------------------------------------------
+
+function fcnRemoteDesktop
+{ 
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        #Configures Remote Desktop
+        #Sets it for: 'Allow connections from computer running any version of Remote Desktop (less secure)        
+        Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\" -Name "fDenyTSConnections" -Value "0" 
+    }
+
+    ### Send the ScriptBlock to the Try/Catch function
+    fcnTryCatch $scriptBlock
+} 
+
+
+
+### ------------------------------------------------- Configure SNMP -----------------------------------------------------------------
+
+function fcnConfigureSNMP
+{
+### Configures the SNMP Service
+
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Make Directory
+    $NewHKLMStrings  = @(); # Dynamic array definition
+    $NewHKLMStrings += ,("HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\TrapConfiguration")
+    $NewHKLMStrings += ,("HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\TrapConfiguration\mcktrapp")
+
+    fcnWriteLog "Checking if regkey exists: $NewHKLMString" cyan
+	#$exists = Get-ItemProperty $NewHKLMString #-ErrorAction SilentlyContinue
+    
+	
+    foreach ($NewHKLMString in $NewHKLMStrings)
+    {
+        $exists = Test-Path $NewHKLMString
+
+        if ($exists -eq $false)
+	    {
+		    fcnWriteLog "`t REGKEY DOES NOT EXIST: $NewHKLMString" green
+            fcnWriteLog "`t CREATING REGKEY:       $NewHKLMString" green
+            $NewKey = "md $NewHKLMString"
+            Invoke-Expression -command $NewKey
+	    }
+	    else
+	    {
+            fcnWriteLog "`t RegKey already exists: $NewHKLMString" green
+	    }
+    }
+
+
+    ### Create New Registry Enteries with New-ItemProperty cmdlet.
+    $NewHKLMStrings  = @(); # Dynamic array definition
+    $NewHKLMStrings  = ,('HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\ValidCommunities\','mckreed','-propertytype DWord')
+    $NewHKLMStrings += ,('HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\ValidCommunities\','mckright','-propertytype DWord')
+    $NewHKLMStrings += ,('HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\TrapConfiguration\mcktrapp','1','-Value na-hpsim01.firny.mckinsey.com')
+    $NewHKLMStrings += ,('HKLM:\SYSTEM\CurrentControlSet\Services\SNMP\Parameters\TrapConfiguration\mcktrapp','2','-Value amhubnp01.tivoli.mckinsey.com')
+
+    foreach ($NewHKLMString in $NewHKLMStrings)
+    {
+        ### Index into the array to get the values.
+        $RegKey    = $NewHKLMString[0]
+        $RegName   = $NewHKLMString[1]
+        $RegValue  = $NewHKLMString[2]
+
+        try
+        {
+            fcnWriteLog "Checking if regkey exists $RegKey $RegName" cyan
+	         
+            $path = $RegKey + $RegName
+            $exists = Test-Path $path
+            $exists = Get-ItemProperty $RegKey $RegName -ErrorAction SilentlyContinue
+
+            
+	        if (($exists -eq $null) -or ($exists.Length -eq 0))
+	        {
+		        fcnWriteLog "`t REGKEY DOES NOT EXIST: $RegKey -name $RegName" green
+                fcnWriteLog "`t CREATING REGKEY:       $RegKey $RegName" green
+                $NewKey = "New-ItemProperty $RegKey -name $RegName $RegValue"
+                Invoke-Expression -command $NewKey
+	        }
+	        elseif (($exists -ne $null) -or ($exists.Length -gt 0))
+	        {
+                fcnWriteLog "`t RegKey already exists: $RegKey -name '$RegName'" green
+	        }
+	    }
+	    catch
+	    {
+		   fcnErrorTrap
+	    }
+    }
+
+    ### Set SNMP Properties
+    $SetHKLMStrings  = @(); # Dynamic array definition
+    $SetHKLMStrings  = ,('HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\RFC1156Agent\','sysServices','-Value 73')
+    $SetHKLMStrings += ,('HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\','mckreed','-Value 4')
+    $SetHKLMStrings += ,('HKLM:\SYSTEM\CurrentControlSet\services\SNMP\Parameters\ValidCommunities\','mckright','-Value 10')
+
+    foreach ($SetHKLMString in $SetHKLMStrings)
+    {
+        ### Index into the array to get the values.
+        $RegKey    = $SetHKLMString[0]
+        $RegName   = $SetHKLMString[1]
+        $RegValue  = $SetHKLMString[2]
+
+        try
+        {
+            fcnWriteLog "Checking if $RegKey $RegName exits:" cyan
+	        $exists = Get-ItemProperty $RegKey $RegName -ErrorAction SilentlyContinue
+
+	        if (($exists -eq $null) -or ($exists.Length -eq 0))
+	        {
+		        fcnWriteLog "`t REGKEY DOES NOT EXIST: $RegKey -name $RegName" green
+                fcnWriteLog "`t CREATING REGKEY:  $RegKey $RegName" green
+                $NewKey = "New-ItemProperty $RegKey $RegName"
+                Invoke-Expression -command $NewKey
+                fcnWriteLog "Setting REGKEY $SetKey"
+                $SetKey = "Set-ItemProperty $RegKey $RegName $RegValue"
+                Invoke-Expression -command $SetKey -ErrorAction SilentlyContinue
+	        }
+	        else
+	        {
+                fcnWriteLog "`t RegKey exists: $RegKey -name '$RegName'" green
+                fcnWriteLog "Setting REGKEY $SetKey" green
+                $SetKey = "Set-ItemProperty $RegKey $RegName $RegValue"
+                Invoke-Expression -command $SetKey
+	        }
+	    }
+	    catch
+	    {
+		   fcnErrorTrap
+	    }
+    }
+
+    ### Remove RegKeys using Remove-ItemProperty
+    $RemoveHKLMStrings  = @(); # Dynamic array definition
+    $RemoveHKLMStrings  += ,('HKLM:\SYSTEM\ControlSet001\services\SNMP\Parameters\PermittedManagers\','1')
+
+    foreach ($RemoveHKLMString in $RemoveHKLMStrings)
+    {
+        ### Index into the array to get the values.
+        $RegKey    = $RemoveHKLMStrings[0]
+        $RegName   = $RemoveHKLMStrings[1]
+        $RegValue  = $RemoveHKLMStrings[2]
+
+        try
+        {
+            fcnWriteLog "Checking if $RegKey $RegName exits:" cyan
+    	    $exists = Get-ItemProperty $RegKey -name $RegName -ErrorAction SilentlyContinue
+
+    	    if (($exists -eq $null) -or ($exists.Length -eq 0))
+    	    {
+                fcnWriteLog "`t RegKey didn't exists: $RegKey -name '$RegName'" green
+    	    }
+    	    else
+    	    {
+                fcnWriteLog "`t REMOVING REGKEY:  $RegKey $RegName" green
+                $RemoveKey = "Remove-ItemProperty $RegKey$RegName"
+                Invoke-Expression -command $RemoveKey
+    	    }
+    	}
+        catch
+    	{
+    	   fcnErrorTrap
+    	}
+    }
+}
+
+
+### -------------------------------------------- Configure Print Drivers -------------------------------------------------------------
+
+function fcnPrintDriverInstallation
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+    ### Define the ScriptBlock
+    $scriptBlock = 
+    {
+        
+       	###  This will help aliviate the default Print Driver Setup Process
+    	###  Note, this process does take some time to complete
+
+        ### Execute the Import of the PrinterFile
+        $cmdPrinterInstall = "c:\Windows\System32\Spool\Tools\" + "PrintBrm.exe -r -f" + " " + "DefaultPrintDrivers.PrinterExport"
+        Invoke-Expression -command $cmdPrinterInstall -ErrorAction Stop
+    }
+}
+
+
+### ------------------------------------------------ Rename Computer -----------------------------------------------------------------
+
+function fcnRenameComputer
+{
+    ### Get the current function name to write to the console and log file
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+	function fcnNewName
+    {
+        ### Read-Host prompts for the variable in the PowerShell "Command Line"
+        $NewName = Read-Host "Please enter the new computer name."
+        $NewName = $NewName.ToLower()
+        
+        if([string]::IsNullOrEmpty($NewName)) 
+        {            
+            Write-Host "You did not enter a new computer name"
+            fcnNewName 
+        }
+        else 
+        {            
+            try
+            {
+                If ($serverOS.version -ge "6.3.9600")
+                {
+                    ### If the Servers Major Version (Windows 2012 R2) then execute this portion of the Script
+                    ### Use the PS v3.0 command
+                    Rename-Computer -ComputerName $ServerName -NewName $NewName  -PassThru #-LocalCredential Administrator Get-Credential cmdlet. -DomainCredential Domain01\Admin01 #-Restart
+	            }
+
+                ElseIf (($serverOS.version -eq "6.1.7600") -or ($serverOS.version -eq "6.1.7601"))
+                {
+                	### If the Servers Version is Windows 2008 R2 No SP1 or Windows 2008 R2 with SP1 then execute                
+                    ### Use the PS v2.0 comand 
+                    $Computer = Get-WmiObject Win32_ComputerSystem -ComputerName $env:COMPUTERNAME
+                    $Computer.Rename($NewName)
+                }   
+                Write-Host "Computer successfully renamed $NewName " 
+            }
+
+            catch
+            {
+                fcnErrorTrap
+                fcnWriteLog "There was an error in $functionName, please try again." Yellow
+                fcnNewName
+            }
+        }
+    }
+    # Run the function to Prompt for the new computer name variable
+    fcnNewName
+}
+
+
+### ------------------------------------------------ Restart Computer ----------------------------------------------------------------
+
+function fcnReStartComputer
+{
+    $functionName = $MyInvocation.MyCommand.name
+    fcnWriteFunctionName
+
+	#Reboots the Server Post Configuration
+    fcnWriteLog "Do you want to reboot the computer now?" White
+    Write-Host -nonewline " (Y/N ?)" -ForegroundColor White
+    $response = read-host
+    if ($response -eq "Y") 
+    {
+        fcnWriteLog "Rebooting computer in 5 seconds . . . " White
+        Write-Host "Hit Ctrl-C or Ctrl-Break to exit script without rebooting."  
+        Start-Sleep -s 5
+        Restart-Computer -Force
+    }
+    elseif ($response -eq "N")  
+    {
+        fcnWriteLog "Exiting script without rebooting in 5 seconds." White
+        Start-Sleep -s 5
+        Exit
+    }
+    elseif (($response -ne "Y") -or ($response -ne "N")) 
+    {
+        write-host "You did not enter Y or N!" -foregroundcolor white
+        fcnReStartComputer
+    }
+}
+
+
+### ========================================== *** [End of functions] *** ============================================================
+#endregion
+
+#region Execute Script
+### =========================================== *** [Begin Execution] *** ============================================================
+    
+### Execute script setup functions.
+fcnWriteLogHeader
+fcnStartTranscriptLog
+fcnCheckforRequiredlFiles
+
+
+### Determines the Server Operating System and executes the appropriate portion of the Script
+If ($serverOS.version -ge "6.3.9600") # 2012 R2
+ {
+    ### If the Servers Major Version (Windows 2012 R2) then execute this portion of the Script
+	fcnWriteLog "Running Configuration for Windows Server 2012 R2" yellow
+	fcnWindowsFirewallRules
+    fcnDisableWindowsFirewall
+	fcnWin2012R2Features
+    #Win2k8Webdeploy
+    fcnSetEDns_W2k12R2
+	fcnDNSConfiguration
+	fcnSetPageFileSize
+	fcnRemoteDesktop
+	fcnConfigureSNMP
+	#fcnPrintDriverInstallation
+ }
+
+ElseIf (($serverOS.version -eq "6.1.7600") -or ($serverOS.version -eq "6.1.7601")) # 2008 R2
+{
+	### If the Servers Version is Windows 2008 R2 No SP1 or Windows 2008 R2 with SP1 then execute
+	fcnWriteLog "Running Configuration for Windows Server 2008 R2" yellow
+	fcnWindowsFirewallRules
+    fcnDisableWindowsFirewall
+	fcnWin2k8R2Features
+	#Win2k8Webdeploy
+    fcnSetEDns_W2k8R2
+	fcnDNSConfiguration
+	fcnWin2k8IPv4Config
+	fcnSetPageFileSize
+	fcnRemoteDesktop
+	fcnConfigureSNMP
+	fcnPrintDriverInstallation
+}
+
+### ============================================ *** [End of Execution] *** ==========================================================
+#endregion
+
+#region End Script
+### ============================================= *** [End of Script] *** ============================================================
+
+### Run function to rename computer
+fcnRenameComputer
+
+### Script Start/Stop times for calulating toal run time
+fcnStopTranscriptLog
+$StopTime = Get-Date
+fcnWriteLog "Script ended at $StopTime" 
+fcnWriteLog "Elapsed Time: $(($StopTime-$StartTime).totalminutes) minutes"
+
+## Force computer reboot
+    fcnWriteLog "**** END OF SCRIPT ****" white
+    fcnReStartComputer
+
+### ============================================= *** [End of Script] *** ============================================================
+#endregion

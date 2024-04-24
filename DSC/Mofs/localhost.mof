@@ -1,0 +1,50 @@
+/*
+@TargetNode='localhost'
+@GeneratedBy=brenn
+@GenerationDate=01/06/2024 06:24:09
+@GenerationHost=ASUS-MAIN
+*/
+
+instance of MSFT_PackageManagementSource as $MSFT_PackageManagementSource1ref
+{
+InstallationPolicy = "Trusted";
+ ProviderName = "PowerShellGet";
+ Ensure = "Present";
+ ResourceID = "[PackageManagementSource]PSGallery";
+ SourceInfo = "C:\\Users\\brenn\\OneDrive\\Documents\\__Repo\\PowerShell\\DSC\\7Zip.DSC.ps1::16::3::PackageManagementSource";
+ ModuleName = "PackageManagement";
+ SourceLocation = "https://www.powershellgallery.com/api/v2";
+ Name = "PSGallery";
+ ModuleVersion = "1.4.8.1";
+ ConfigurationName = "ZipDSC";
+};
+instance of MSFT_PackageManagement as $MSFT_PackageManagement1ref
+{
+Source = "https://chocolatey.org/api/v2/";
+ Ensure = "Present";
+ ResourceID = "[PackageManagement]7Zip";
+ SourceInfo = "C:\\Users\\brenn\\OneDrive\\Documents\\__Repo\\PowerShell\\DSC\\7Zip.DSC.ps1::25::3::PackageManagement";
+ ModuleName = "PackageManagement";
+ ProviderName = "Chocolatey";
+ Name = "7zip";
+ ModuleVersion = "1.4.8.1";
+ ConfigurationName = "ZipDSC";
+};
+instance of OMI_ConfigurationDocument
+
+                    {
+ Version="2.0.0";
+
+                        MinimumCompatibleVersion = "1.0.0";
+
+                        CompatibleVersionAdditionalProperties= {"Omi_BaseResource:ConfigurationName"};
+
+                        Author="brenn";
+
+                        GenerationDate="01/06/2024 06:24:09";
+
+                        GenerationHost="ASUS-MAIN";
+
+                        Name="ZipDSC";
+
+                    };

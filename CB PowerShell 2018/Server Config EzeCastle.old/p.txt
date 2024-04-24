@@ -1,0 +1,11 @@
+﻿ExpectedOSVersion = 6.3.9600
+NewInterfaceName = LAN
+NewIPv4Address = 10.0.0.1
+NewSubnet = 255.255.255.0  
+NewDefaultGateway = 10.0.0.250 
+NewPrimaryDNS = 10.0.0.220
+NewSecondaryDNS = 10.0.0.221 
+NewDomainName = Contoso
+NewCDLetter = R:
+NewAdminName = LocalAdmin
+

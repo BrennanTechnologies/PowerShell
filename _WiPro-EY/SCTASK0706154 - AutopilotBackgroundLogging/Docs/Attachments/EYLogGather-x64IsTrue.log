@@ -1,0 +1,76 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20221017023950
+Username: WORKGROUP\SYSTEM
+RunAs User: WORKGROUP\SYSTEM
+Configuration Name: 
+Machine: XW5CD047R2KV (Microsoft Windows NT 10.0.19042.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -executionPolicy bypass -file C:\Program Files (x86)\Microsoft Intune Management Extension\Policies\Scripts\00000000-0000-0000-0000-000000000000_a880eb3d-3e16-4b05-af73-c76eaf1e18f4.ps1
+Process ID: 8368
+PSVersion: 5.1.19041.1237
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.1237
+BuildVersion: 10.0.19041.1237
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+************************************************************
+Starting Script
+Friendly Script Name: EYLogGather
+Script Name: C:\Program Files (x86)\Microsoft Intune Management Extension\Policies\Scripts\00000000-0000-0000-0000-000000000000_a880eb3d-3e16-4b05-af73-c76eaf1e18f4.ps1
+Version: 1.6
+Is x64 process: True
+************************************************************
+This script has not yet been executed on this machine. Will now run it for the first time.
+------------------------------------------------------------
+Save file C:\MAINTENANCE\Installers\Troubleshooting\EYCollectLogs.ps1 with 'UTF8 with BOM' encoding.
+------------------------------------------------------------
+Creating the marker entry in HKLM:\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{de6d524d-1aef-4439-942b-606c4bd6a0f6}
+Exiting Invoke-EYMain with exit code 18181
+************************************************************
+The Script finished with the special 18181 success return code.
+About to exit the script with exit code 18181
+**********************
+Windows PowerShell transcript end
+End time: 20221017023951
+**********************
+**********************
+Windows PowerShell transcript start
+Start time: 20221017032205
+Username: WORKGROUP\SYSTEM
+RunAs User: WORKGROUP\SYSTEM
+Configuration Name: 
+Machine: XW5CD047R2KV (Microsoft Windows NT 10.0.19042.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -executionPolicy bypass -file C:\Program Files (x86)\Microsoft Intune Management Extension\Policies\Scripts\6afe1761-28ee-46a7-8765-3971451c109a_a880eb3d-3e16-4b05-af73-c76eaf1e18f4.ps1
+Process ID: 12016
+PSVersion: 5.1.19041.1237
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.1237
+BuildVersion: 10.0.19041.1237
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+************************************************************
+Starting Script
+Friendly Script Name: EYLogGather
+Script Name: C:\Program Files (x86)\Microsoft Intune Management Extension\Policies\Scripts\6afe1761-28ee-46a7-8765-3971451c109a_a880eb3d-3e16-4b05-af73-c76eaf1e18f4.ps1
+Version: 1.6
+Is x64 process: True
+************************************************************
+This script has already been executed on this machine. Will rerun it anyway. Details: HKLM:\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{de6d524d-1aef-4439-942b-606c4bd6a0f6}
+------------------------------------------------------------
+Save file C:\MAINTENANCE\Installers\Troubleshooting\EYCollectLogs.ps1 with 'UTF8 with BOM' encoding.
+------------------------------------------------------------
+Creating the marker entry in HKLM:\SOFTWARE\WOW6432Node\Ernst & Young\GlobalPackageID\{de6d524d-1aef-4439-942b-606c4bd6a0f6}
+Exiting Invoke-EYMain with exit code 18181
+************************************************************
+The Script finished with the special 18181 success return code.
+About to exit the script with exit code 18181
+**********************
+Windows PowerShell transcript end
+End time: 20221017032206
+**********************

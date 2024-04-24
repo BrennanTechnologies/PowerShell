@@ -1,0 +1,123 @@
+C:\Users\UR717GB>dsregcmd /status
+
++----------------------------------------------------------------------+
+| Device State                                                         |
++----------------------------------------------------------------------+
+
+             AzureAdJoined : YES
+          EnterpriseJoined : NO
+              DomainJoined : YES
+                DomainName : EY
+               Device Name : IN3100104W1.ey.net
+
++----------------------------------------------------------------------+
+| Device Details                                                       |
++----------------------------------------------------------------------+
+
+                  DeviceId : f15a9fd3-af62-4ae2-ab05-b8e63e8c965b
+                Thumbprint : CD6D14DA0E2384BDB8B573F59872353DF8C4602E
+ DeviceCertificateValidity : [ 2021-07-22 16:25:03.000 UTC -- 2031-07-22 16:55:03.000 UTC ]
+            KeyContainerId : 567f1ad8-c7ab-4c3c-802d-4e4191dd78f0
+               KeyProvider : Microsoft Software Key Storage Provider
+              TpmProtected : NO
+          DeviceAuthStatus : SUCCESS
+
++----------------------------------------------------------------------+
+| Tenant Details                                                       |
++----------------------------------------------------------------------+
+
+                TenantName : EY
+                  TenantId : 5b973f99-77df-4beb-b27d-aa0c70b8482c
+                       Idp : login.windows.net
+               AuthCodeUrl : https://login.microsoftonline.com/5b973f99-77df-4beb-b27d-aa0c70b8482c/oauth2/authorize
+            AccessTokenUrl : https://login.microsoftonline.com/5b973f99-77df-4beb-b27d-aa0c70b8482c/oauth2/token
+                    MdmUrl : https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc
+                 MdmTouUrl : https://portal.manage.microsoft.com/TermsofUse.aspx
+          MdmComplianceUrl : https://portal.manage.microsoft.com/?portalAction=Compliance
+               SettingsUrl : eyJVcmlzIjpbImh0dHBzOi8va2FpbGFuaTYub25lLm1pY3Jvc29mdC5jb20vIiwiaHR0cHM6Ly9rYWlsYW5pNy5vbmUubWljcm9zb2Z0LmNvbS8iXX0=
+            JoinSrvVersion : 1.0
+                JoinSrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/device/
+                 JoinSrvId : urn:ms-drs:enterpriseregistration.windows.net
+             KeySrvVersion : 1.0
+                 KeySrvUrl : https://enterpriseregistration.windows.net/EnrollmentServer/key/
+                  KeySrvId : urn:ms-drs:enterpriseregistration.windows.net
+        WebAuthNSrvVersion : 1.0
+            WebAuthNSrvUrl : https://enterpriseregistration.windows.net/webauthn/5b973f99-77df-4beb-b27d-aa0c70b8482c/
+             WebAuthNSrvId : urn:ms-drs:enterpriseregistration.windows.net
+    DeviceManagementSrvVer : 1.0
+    DeviceManagementSrvUrl : https://enterpriseregistration.windows.net/manage/5b973f99-77df-4beb-b27d-aa0c70b8482c/
+     DeviceManagementSrvId : urn:ms-drs:enterpriseregistration.windows.net
+
++----------------------------------------------------------------------+
+| User State                                                           |
++----------------------------------------------------------------------+
+
+                    NgcSet : NO
+           WorkplaceJoined : NO
+             WamDefaultSet : YES
+       WamDefaultAuthority : organizations
+              WamDefaultId : https://login.microsoft.com
+            WamDefaultGUID : {B16898C6-A148-4967-9171-64D755DA8520} (AzureAd)
+
++----------------------------------------------------------------------+
+| SSO State                                                            |
++----------------------------------------------------------------------+
+
+                AzureAdPrt : YES
+      AzureAdPrtUpdateTime : 2022-10-28 07:59:35.000 UTC
+      AzureAdPrtExpiryTime : 2022-11-11 07:59:34.000 UTC
+       AzureAdPrtAuthority : https://login.microsoftonline.com/5b973f99-77df-4beb-b27d-aa0c70b8482c
+             EnterprisePrt : NO
+    EnterprisePrtAuthority : https://globalaccess.ey.com:443/adfs
+                 OnPremTgt : NO
+                  CloudTgt : NO
+         KerbTopLevelNames :
+
++----------------------------------------------------------------------+
+| Diagnostic Data                                                      |
++----------------------------------------------------------------------+
+
+        AadRecoveryEnabled : NO
+    Executing Account Name : US\UR717GB, Sravanthi.Gundavelly@ey.com
+               KeySignTest : PASSED
+
+        DisplayNameUpdated : Managed by MDM
+          OsVersionUpdated : Managed by MDM
+           HostNameUpdated : YES
+
+      Last HostName Update : SUCCESS
+               Client Time : 2022-10-18 09:24:02.000 UTC
+                Request ID : 780fc2a6-755c-47be-adef-23a6f1122d76
+               Server Time : 10-18-2022 9:24:02Z
+               HTTP Status : 200
+            Server Message : The attribute 'hostnames' value(s) were successfully updated
+
++----------------------------------------------------------------------+
+| IE Proxy Config for Current User                                     |
++----------------------------------------------------------------------+
+
+      Auto Detect Settings : NO
+    Auto-Configuration URL : http://127.0.0.1:9000/systemproxy-e07a23b8.pac
+         Proxy Server List :
+         Proxy Bypass List :
+
++----------------------------------------------------------------------+
+| WinHttp Default Proxy Config                                         |
++----------------------------------------------------------------------+
+
+               Access Type : DIRECT
+
++----------------------------------------------------------------------+
+| Ngc Prerequisite Check                                               |
++----------------------------------------------------------------------+
+
+            IsDeviceJoined : YES
+             IsUserAzureAD : YES
+             PolicyEnabled : NO
+          PostLogonEnabled : YES
+            DeviceEligible : YES
+        SessionIsNotRemote : YES
+            CertEnrollment : none
+              PreReqResult : WillNotProvision
+
+For more information, please visit https://www.microsoft.com/aadjerrors

@@ -1,0 +1,35 @@
+AppName,ServerName,LogPath,PhysicalPath,OSVer
+PortAlive,wfaws01l-con-08,\\wfaws01l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws02l-con-08,\\wfaws02l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws03l-con-08,\\wfaws03l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws04l-con-08,\\wfaws04l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws05l-con-08,\\wfaws05l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws06l-con-08,\\wfaws06l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws07l-con-08,\\wfaws07l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws08l-con-08,\\wfaws08l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws09l-con-08,\\wfaws09l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+PortAlive,wfaws10l-con-08,\\wfaws10l-con-08.portal.webmd.com\e$\webmd\apps\portallive\logs\web\PORTALLIVE\archive,C:\webmd\apps\portallive\logs\web\PORTALLIVE\archive,W2K8
+Member,regws01l-shr-08,\\regws01l-shr-08.portal.webmd.com\c$\webmd\apps\member\logs\web\W3SVC494133501\archive,C:\webmd\apps\member\logs\web\W3SVC494133501\archive,W2K3
+Member,regws02l-shr-08,\\regws02l-shr-08.portal.webmd.com\c$\webmd\apps\member\logs\web\W3SVC494133501\archive,C:\webmd\apps\member\logs\web\W3SVC494133501\archive,W2K3
+Member,regws03l-shr-08,\\regws03l-shr-08.portal.webmd.com\c$\webmd\apps\member\logs\web\W3SVC494133501\archive,C:\webmd\apps\member\logs\web\W3SVC494133501\archive,W2K3
+Member,regws04l-shr-08,\\regws04l-shr-08.portal.webmd.com\c$\webmd\apps\member\logs\web\W3SVC494133501\archive,C:\webmd\apps\member\logs\web\W3SVC494133501\archive,W2K3
+Symptom Checker,afaws01l-con-08,\\afaws01l-con-08.portal.webmd.com\c$\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,C:\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,W2K3
+Symptom Checker,afaws02l-con-08,\\afaws02l-con-08.portal.webmd.com\c$\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,C:\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,W2K3
+Symptom Checker,afaws03l-con-08,\\afaws03l-con-08.portal.webmd.com\c$\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,C:\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,W2K3
+Symptom Checker,afaws04l-con-08,\\afaws04l-con-08.portal.webmd.com\c$\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,C:\webmd\apps\SymptomChecker\logs\W3SVC165167979\archive,W2K3
+RegAPI,regws01l-shr-08,\\regws01l-shr-08.portal.webmd.com\c$\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,C:\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,W2K3
+RegAPI,regws02l-shr-08,\\regws02l-shr-08.portal.webmd.com\c$\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,C:\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,W2K3
+RegAPI,regws03l-shr-08,\\regws03l-shr-08.portal.webmd.com\c$\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,C:\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,W2K3
+RegAPI,regws04l-shr-08,\\regws04l-shr-08.portal.webmd.com\c$\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,C:\webmd\apps\regapi\logs\web\W3SVC1498837549\archive,W2K3
+Food & Fitness,afeas01l-con-08,\\afeas01l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas02l-con-08,\\afeas02l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas03l-con-08,\\afeas03l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas04l-con-08,\\afeas04l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas05l-con-08,\\afeas05l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas06l-con-08,\\afeas06l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas07l-con-08,\\afeas07l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas08l-con-08,\\afeas08l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas09l-con-08,\\afeas09l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas10l-con-08,\\afeas10l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas11l-con-08,\\afeas11l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8
+Food & Fitness,afeas12l-con-08,\\afeas12l-con-08.portal.webmd.com\e$\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,E:\webmd\apps\ffpbackgroundsvc\logs\web\FFPBACKGROUNDSVC\archive,W2K8

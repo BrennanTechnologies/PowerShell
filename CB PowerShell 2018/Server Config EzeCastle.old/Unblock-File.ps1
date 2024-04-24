@@ -1,0 +1,1 @@
+﻿dir C:\Scripts\* | Unblock-File

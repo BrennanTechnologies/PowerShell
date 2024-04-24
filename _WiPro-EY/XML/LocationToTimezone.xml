@@ -1,0 +1,779 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Locations Version="1">
+  <Location GeoId="2" Name="Antigua and Barbuda" ISO3166="AG">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="3" Name="Afghanistan" ISO3166="AF">
+    <Timezone Id="Afghanistan Standard Time" DisplayName="(UTC+04:30) Kabul" />
+  </Location>
+  <Location GeoId="4" Name="Algeria" ISO3166="DZ">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="5" Name="Azerbaijan" ISO3166="AZ">
+    <Timezone Id="Azerbaijan Standard Time" DisplayName="(UTC+04:00) Baku" />
+  </Location>
+  <Location GeoId="6" Name="Albania" ISO3166="AL">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="7" Name="Armenia" ISO3166="AM">
+    <Timezone Id="Caucasus Standard Time" DisplayName="(UTC+04:00) Yerevan" />
+  </Location>
+  <Location GeoId="8" Name="Andorra" ISO3166="AD">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="9" Name="Angola" ISO3166="AO">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="10" Name="American Samoa" ISO3166="AS">
+    <Timezone Id="UTC-11" DisplayName="(UTC-11:00) Coordinated Universal Time-11" />
+  </Location>
+  <Location GeoId="11" Name="Argentina" ISO3166="AR">
+    <Timezone Id="Argentina Standard Time" DisplayName="(UTC-03:00) City of Buenos Aires" />
+  </Location>
+  <Location GeoId="12" Name="Australia" ISO3166="AU">
+    <Timezone Id="W. Australia Standard Time" DisplayName="(UTC+08:00) Perth" />
+    <Timezone Id="Cen. Australia Standard Time" DisplayName="(UTC+09:30) Adelaide" />
+    <Timezone Id="AUS Central Standard Time" DisplayName="(UTC+09:30) Darwin" />
+    <Timezone Id="E. Australia Standard Time" DisplayName="(UTC+10:00) Brisbane"/>
+    <Timezone Id="AUS Eastern Standard Time" DisplayName="(UTC+10:00) Canberra, Melbourne, Sydney" />
+  </Location>
+  <Location GeoId="14" Name="Austria" ISO3166="AT">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="17" Name="Bahrain" ISO3166="BH">
+    <Timezone Id="Arab Standard Time" DisplayName="(UTC+03:00) Kuwait, Riyadh" />
+  </Location>
+  <Location GeoId="18" Name="Barbados" ISO3166="BB">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="19" Name="Botswana" ISO3166="BW">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="20" Name="Bermuda" ISO3166="BM">
+    <Timezone Id="Pacific Standard Time" DisplayName="(UTC-08:00) Pacific Time (US &amp; Canada)" />
+    <Timezone Id="Mountain Standard Time" DisplayName="(UTC-07:00) Mountain Time (US &amp; Canada)" />
+    <Timezone Id="Central Standard Time" DisplayName="(UTC-06:00) Central Time (US &amp; Canada)" />
+    <Timezone Id="Canada Central Standard Time" DisplayName="(UTC-06:00) Saskatchewan" />
+    <Timezone Id="Atlantic Standard Time" DisplayName="(UTC-04:00) Atlantic Time (Canada)" />
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+    <Timezone Id="Newfoundland Standard Time" DisplayName="(UTC-03:30) Newfoundland" />
+  </Location>
+  <Location GeoId="21" Name="Belgium" ISO3166="BE">
+    <Timezone Id="Romance Standard Time" DisplayName="(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" />
+  </Location>
+  <Location GeoId="22" Name="Bahamas, The" ISO3166="BS">
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="23" Name="Bangladesh" ISO3166="BD">
+    <Timezone Id="Bangladesh Standard Time" DisplayName="(UTC+06:00) Dhaka" />
+  </Location>
+  <Location GeoId="24" Name="Belize" ISO3166="BZ">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="25" Name="Bosnia and Herzegovina" ISO3166="BA">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="26" Name="Bolivia" ISO3166="BO">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="27" Name="Myanmar" ISO3166="MM">
+    <Timezone Id="Myanmar Standard Time" DisplayName="(UTC+06:30) Yangon (Rangoon)" />
+  </Location>
+  <Location GeoId="28" Name="Benin" ISO3166="BJ">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="29" Name="Belarus" ISO3166="BY">
+    <Timezone Id="Belarus Standard Time" DisplayName="(UTC+03:00) Minsk" />
+  </Location>
+  <Location GeoId="30" Name="Solomon Islands" ISO3166="SB">
+    <Timezone Id="Central Pacific Standard Time" DisplayName="(UTC+11:00) Solomon Is., New Caledonia" />
+  </Location>
+  <Location GeoId="32" Name="Brazil" ISO3166="BR">
+    <Timezone Id="E. South America Standard Time" DisplayName="(UTC-03:00) Brasilia" />
+  </Location>
+  <Location GeoId="34" Name="Bhutan" ISO3166="BT">
+    <Timezone Id="Bangladesh Standard Time" DisplayName="(UTC+06:00) Dhaka" />
+  </Location>
+  <Location GeoId="35" Name="Bulgaria" ISO3166="BG">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="37" Name="Brunei" ISO3166="BN">
+    <Timezone Id="Singapore Standard Time" DisplayName="(UTC+08:00) Kuala Lumpur, Singapore" />
+  </Location>
+  <Location GeoId="38" Name="Burundi" ISO3166="BI">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="39" Name="Canada" ISO3166="CA">
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="40" Name="Cambodia" ISO3166="KH">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="41" Name="Chad" ISO3166="TD">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="42" Name="Sri Lanka" ISO3166="LK">
+    <Timezone Id="Sri Lanka Standard Time" DisplayName="(UTC+05:30) Sri Jayawardenepura" />
+  </Location>
+  <Location GeoId="43" Name="Congo" ISO3166="CG">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="44" Name="Congo (DRC)" ISO3166="CD">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="45" Name="China" ISO3166="CN">
+    <Timezone Id="China Standard Time" DisplayName="(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi" />
+  </Location>
+  <Location GeoId="46" Name="Chile" ISO3166="CL">
+    <Timezone Id="Pacific SA Standard Time" DisplayName="(UTC-04:00) Santiago" />
+  </Location>
+  <Location GeoId="49" Name="Cameroon" ISO3166="CM">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="50" Name="Comoros" ISO3166="KM">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="51" Name="Colombia" ISO3166="CO">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="54" Name="Costa Rica" ISO3166="CR">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="55" Name="Central African Republic" ISO3166="CF">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="56" Name="Cuba" ISO3166="CU">
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="57" Name="Cabo Verde" ISO3166="CV">
+    <Timezone Id="Cape Verde Standard Time" DisplayName="(UTC-01:00) Cabo Verde Is." />
+  </Location>
+  <Location GeoId="59" Name="Cyprus" ISO3166="CY">
+    <Timezone Id="E. Europe Standard Time" DisplayName="(UTC+02:00) Chisinau" />
+  </Location>
+  <Location GeoId="61" Name="Denmark" ISO3166="DK">
+    <Timezone Id="Romance Standard Time" DisplayName="(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" />
+  </Location>
+  <Location GeoId="62" Name="Djibouti" ISO3166="DJ">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="63" Name="Dominica" ISO3166="DM">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="65" Name="Dominican Republic" ISO3166="DO">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="66" Name="Ecuador" ISO3166="EC">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="67" Name="Egypt" ISO3166="EG">
+    <Timezone Id="Egypt Standard Time" DisplayName="(UTC+02:00) Cairo" />
+  </Location>
+  <Location GeoId="68" Name="Ireland" ISO3166="IE">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="69" Name="Equatorial Guinea" ISO3166="GQ">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="70" Name="Estonia" ISO3166="EE">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="71" Name="Eritrea" ISO3166="ER">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="72" Name="El Salvador" ISO3166="SV">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="73" Name="Ethiopia" ISO3166="ET">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="75" Name="Czech Republic" ISO3166="CZ">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="77" Name="Finland" ISO3166="FI">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="78" Name="Fiji" ISO3166="FJ">
+    <Timezone Id="Fiji Standard Time" DisplayName="(UTC+12:00) Fiji" />
+  </Location>
+  <Location GeoId="80" Name="Micronesia" ISO3166="FM">
+    <Timezone Id="West Pacific Standard Time" DisplayName="(UTC+10:00) Guam, Port Moresby" />
+  </Location>
+  <Location GeoId="81" Name="Faroe Islands" ISO3166="FO">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="84" Name="France" ISO3166="FR">
+    <Timezone Id="Romance Standard Time" DisplayName="(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" />
+  </Location>
+  <Location GeoId="86" Name="Gambia" ISO3166="GM">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="87" Name="Gabon" ISO3166="GA">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="88" Name="Georgia" ISO3166="GE">
+    <Timezone Id="Georgian Standard Time" DisplayName="(UTC+04:00) Tbilisi" />
+  </Location>
+  <Location GeoId="89" Name="Ghana" ISO3166="GH">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="90" Name="Gibraltar" ISO3166="GI">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="91" Name="Grenada" ISO3166="GD">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="93" Name="Greenland" ISO3166="GL">
+    <Timezone Id="Greenland Standard Time" DisplayName="(UTC-03:00) Greenland" />
+  </Location>
+  <Location GeoId="94" Name="Germany" ISO3166="DE">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="98" Name="Greece" ISO3166="GR">
+    <Timezone Id="GTB Standard Time" DisplayName="(UTC+02:00) Athens, Bucharest" />
+  </Location>
+  <Location GeoId="99" Name="Guatemala" ISO3166="GT">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="100" Name="Guinea" ISO3166="GN">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="101" Name="Guyana" ISO3166="GY">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="103" Name="Haiti" ISO3166="HT">
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="104" Name="Hong Kong SAR" ISO3166="HK">
+    <Timezone Id="China Standard Time" DisplayName="(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi" />
+  </Location>
+  <Location GeoId="106" Name="Honduras" ISO3166="HN">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="108" Name="Croatia" ISO3166="HR">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="109" Name="Hungary" ISO3166="HU">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="110" Name="Iceland" ISO3166="IS">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="111" Name="Indonesia" ISO3166="ID">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="113" Name="India" ISO3166="IN">
+    <Timezone Id="India Standard Time" DisplayName="(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi" />
+  </Location>
+  <Location GeoId="114" Name="British Indian Ocean Territory" ISO3166="IO">
+    <Timezone Id="Central Asia Standard Time" DisplayName="(UTC+06:00) Astana" />
+  </Location>
+  <Location GeoId="116" Name="Iran" ISO3166="IR">
+    <Timezone Id="Iran Standard Time" DisplayName="(UTC+03:30) Tehran" />
+  </Location>
+  <Location GeoId="117" Name="Israel" ISO3166="IL">
+    <Timezone Id="Israel Standard Time" DisplayName="(UTC+02:00) Jerusalem" />
+  </Location>
+  <Location GeoId="118" Name="Italy" ISO3166="IT">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="119" Name="Côte d'Ivoire" ISO3166="CI">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="121" Name="Iraq" ISO3166="IQ">
+    <Timezone Id="Arabic Standard Time" DisplayName="(UTC+03:00) Baghdad" />
+  </Location>
+  <Location GeoId="122" Name="Japan" ISO3166="JP">
+    <Timezone Id="Tokyo Standard Time" DisplayName="(UTC+09:00) Osaka, Sapporo, Tokyo" />
+  </Location>
+  <Location GeoId="124" Name="Jamaica" ISO3166="JM">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="125" Name="Jan Mayen" ISO3166="SJ">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="126" Name="Jordan" ISO3166="JO">
+    <Timezone Id="Jordan Standard Time" DisplayName="(UTC+02:00) Amman" />
+  </Location>
+  <Location GeoId="129" Name="Kenya" ISO3166="KE">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="130" Name="Kyrgyzstan" ISO3166="KG">
+    <Timezone Id="Central Asia Standard Time" DisplayName="(UTC+06:00) Astana" />
+  </Location>
+  <Location GeoId="131" Name="North Korea" ISO3166="KP">
+    <Timezone Id="Korea Standard Time" DisplayName="(UTC+09:00) Seoul" />
+  </Location>
+  <Location GeoId="133" Name="Kiribati" ISO3166="KI">
+    <Timezone Id="UTC+12" DisplayName="(UTC+12:00) Coordinated Universal Time+12" />
+  </Location>
+  <Location GeoId="134" Name="Korea" ISO3166="KR">
+    <Timezone Id="Korea Standard Time" DisplayName="(UTC+09:00) Seoul" />
+  </Location>
+  <Location GeoId="136" Name="Kuwait" ISO3166="KW">
+    <Timezone Id="Arab Standard Time" DisplayName="(UTC+03:00) Kuwait, Riyadh" />
+  </Location>
+  <Location GeoId="137" Name="Kazakhstan" ISO3166="KZ">
+    <Timezone Id="Central Asia Standard Time" DisplayName="(UTC+06:00) Astana" />
+  </Location>
+  <Location GeoId="138" Name="Laos" ISO3166="LA">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="139" Name="Lebanon" ISO3166="LB">
+    <Timezone Id="Middle East Standard Time" DisplayName="(UTC+02:00) Beirut" />
+  </Location>
+  <Location GeoId="140" Name="Latvia" ISO3166="LV">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="141" Name="Lithuania" ISO3166="LT">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="142" Name="Liberia" ISO3166="LR">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="143" Name="Slovakia" ISO3166="SK">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="145" Name="Liechtenstein" ISO3166="LI">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="146" Name="Lesotho" ISO3166="LS">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="147" Name="Luxembourg" ISO3166="LU">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="148" Name="Libya" ISO3166="LY">
+    <Timezone Id="E. Europe Standard Time" DisplayName="(UTC+02:00) Chisinau" />
+  </Location>
+  <Location GeoId="149" Name="Madagascar" ISO3166="MG">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="151" Name="Macao SAR" ISO3166="MO">
+    <Timezone Id="China Standard Time" DisplayName="(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi" />
+  </Location>
+  <Location GeoId="152" Name="Moldova" ISO3166="MD">
+    <Timezone Id="GTB Standard Time" DisplayName="(UTC+02:00) Athens, Bucharest" />
+  </Location>
+  <Location GeoId="154" Name="Mongolia" ISO3166="MN">
+    <Timezone Id="Ulaanbaatar Standard Time" DisplayName="(UTC+08:00) Ulaanbaatar" />
+  </Location>
+  <Location GeoId="156" Name="Malawi" ISO3166="MW">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="157" Name="Mali" ISO3166="ML">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="158" Name="Monaco" ISO3166="MC">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="159" Name="Morocco" ISO3166="MA">
+    <Timezone Id="Morocco Standard Time" DisplayName="(UTC+01:00) Casablanca" />
+  </Location>
+  <Location GeoId="160" Name="Mauritius" ISO3166="MU">
+    <Timezone Id="Mauritius Standard Time" DisplayName="(UTC+04:00) Port Louis" />
+  </Location>
+  <Location GeoId="162" Name="Mauritania" ISO3166="MR">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="163" Name="Malta" ISO3166="MT">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="164" Name="Oman" ISO3166="OM">
+    <Timezone Id="Arabian Standard Time" DisplayName="(UTC+04:00) Abu Dhabi, Muscat" />
+  </Location>
+  <Location GeoId="165" Name="Maldives" ISO3166="MV">
+    <Timezone Id="West Asia Standard Time" DisplayName="(UTC+05:00) Ashgabat, Tashkent" />
+  </Location>
+  <Location GeoId="166" Name="Mexico" ISO3166="MX">
+    <Timezone Id="Pacific Standard Time (Mexico)" DisplayName="(UTC-08:00) Baja California" />
+    <Timezone Id="Mountain Standard Time (Mexico)" DisplayName="(UTC-07:00) Chihuahua, La Paz, Mazatlan" />
+    <Timezone Id="Central Standard Time (Mexico)" DisplayName="(UTC-06:00) Guadalajara, Mexico City, Monterrey" />
+    <Timezone Id="Eastern Standard Time (Mexico)" DisplayName="(UTC-05:00) Chetumal" />
+  </Location>
+  <Location GeoId="167" Name="Malaysia" ISO3166="MY">
+    <Timezone Id="Singapore Standard Time" DisplayName="(UTC+08:00) Kuala Lumpur, Singapore" />
+  </Location>
+  <Location GeoId="168" Name="Mozambique" ISO3166="MZ">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="173" Name="Niger" ISO3166="NE">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="174" Name="Vanuatu" ISO3166="VU">
+    <Timezone Id="Central Pacific Standard Time" DisplayName="(UTC+11:00) Solomon Is., New Caledonia" />
+  </Location>
+  <Location GeoId="175" Name="Nigeria" ISO3166="NG">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="176" Name="Netherlands" ISO3166="NL">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="177" Name="Norway" ISO3166="NO">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="178" Name="Nepal" ISO3166="NP">
+    <Timezone Id="Nepal Standard Time" DisplayName="(UTC+05:45) Kathmandu" />
+  </Location>
+  <Location GeoId="180" Name="Nauru" ISO3166="NR">
+    <Timezone Id="UTC+12" DisplayName="(UTC+12:00) Coordinated Universal Time+12" />
+  </Location>
+  <Location GeoId="181" Name="Suriname" ISO3166="SR">
+    <Timezone Id="SA Eastern Standard Time" DisplayName="(UTC-03:00) Cayenne, Fortaleza" />
+  </Location>
+  <Location GeoId="182" Name="Nicaragua" ISO3166="NI">
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+  </Location>
+  <Location GeoId="183" Name="New Zealand" ISO3166="NZ">
+    <Timezone Id="New Zealand Standard Time" DisplayName="(UTC+12:00) Auckland, Wellington" />
+  </Location>
+  <Location GeoId="184" Name="Palestinian Authority" ISO3166="PS">
+    <Timezone Id="Egypt Standard Time" DisplayName="(UTC+02:00) Cairo" />
+  </Location>
+  <Location GeoId="185" Name="Paraguay" ISO3166="PY">
+    <Timezone Id="Paraguay Standard Time" DisplayName="(UTC-04:00) Asuncion" />
+  </Location>
+  <Location GeoId="187" Name="Peru" ISO3166="PE">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="190" Name="Pakistan" ISO3166="PK">
+    <Timezone Id="Pakistan Standard Time" DisplayName="(UTC+05:00) Islamabad, Karachi" />
+  </Location>
+  <Location GeoId="191" Name="Poland" ISO3166="PL">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="192" Name="Panama" ISO3166="PA">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="193" Name="Portugal" ISO3166="PT">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="194" Name="Papua New Guinea" ISO3166="PG">
+    <Timezone Id="West Pacific Standard Time" DisplayName="(UTC+10:00) Guam, Port Moresby" />
+  </Location>
+  <Location GeoId="195" Name="Palau" ISO3166="PW">
+    <Timezone Id="Tokyo Standard Time" DisplayName="(UTC+09:00) Osaka, Sapporo, Tokyo" />
+  </Location>
+  <Location GeoId="196" Name="Guinea-Bissau" ISO3166="GW">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="197" Name="Qatar" ISO3166="QA">
+    <Timezone Id="Arab Standard Time" DisplayName="(UTC+03:00) Kuwait, Riyadh" />
+  </Location>
+  <Location GeoId="198" Name="Reunion" ISO3166="RE">
+    <Timezone Id="Mauritius Standard Time" DisplayName="(UTC+04:00) Port Louis" />
+  </Location>
+  <Location GeoId="199" Name="Marshall Islands" ISO3166="MH">
+    <Timezone Id="UTC+12" DisplayName="(UTC+12:00) Coordinated Universal Time+12" />
+  </Location>
+  <Location GeoId="200" Name="Romania" ISO3166="RO">
+    <Timezone Id="GTB Standard Time" DisplayName="(UTC+02:00) Athens, Bucharest" />
+  </Location>
+  <Location GeoId="201" Name="Philippines" ISO3166="PH">
+    <Timezone Id="Singapore Standard Time" DisplayName="(UTC+08:00) Kuala Lumpur, Singapore" />
+  </Location>
+  <Location GeoId="202" Name="Puerto Rico" ISO3166="PR">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="203" Name="Russia" ISO3166="RU">
+    <Timezone Id="Russian Standard Time" DisplayName="(UTC+03:00) Moscow, St. Petersburg" />
+    <Timezone Id="Astrakhan Standard Time" DisplayName="(UTC+04:00) Astrakhan, Ulyanovsk" />
+    <Timezone Id="Ekaterinburg Standard Time" DisplayName="(UTC+05:00) Ekaterinburg" />
+    <Timezone Id="N. Central Asia Standard Time" DisplayName="(UTC+07:00) Novosibirsk" />
+  </Location>
+  <Location GeoId="204" Name="Rwanda" ISO3166="RW">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="205" Name="Saudi Arabia" ISO3166="SA">
+    <Timezone Id="Arab Standard Time" DisplayName="(UTC+03:00) Kuwait, Riyadh" />
+  </Location>
+  <Location GeoId="206" Name="Saint Pierre and Miquelon" ISO3166="PM">
+    <Timezone Id="Greenland Standard Time" DisplayName="(UTC-03:00) Greenland" />
+  </Location>
+  <Location GeoId="207" Name="Saint Kitts and Nevis" ISO3166="KN">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="208" Name="Seychelles" ISO3166="SC">
+    <Timezone Id="Mauritius Standard Time" DisplayName="(UTC+04:00) Port Louis" />
+  </Location>
+  <Location GeoId="209" Name="South Africa" ISO3166="ZA">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="210" Name="Senegal" ISO3166="SN">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="212" Name="Slovenia" ISO3166="SI">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="213" Name="Sierra Leone" ISO3166="SL">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="214" Name="San Marino" ISO3166="SM">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="215" Name="Singapore" ISO3166="SG">
+    <Timezone Id="Singapore Standard Time" DisplayName="(UTC+08:00) Kuala Lumpur, Singapore" />
+  </Location>
+  <Location GeoId="216" Name="Somalia" ISO3166="SO">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="217" Name="Spain" ISO3166="ES">
+    <Timezone Id="Romance Standard Time" DisplayName="(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" />
+  </Location>
+  <Location GeoId="218" Name="Saint Lucia" ISO3166="LC">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="219" Name="Sudan" ISO3166="SD">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="220" Name="Svalbard" ISO3166="SJ">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="221" Name="Sweden" ISO3166="SE">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="222" Name="Syria" ISO3166="SY">
+    <Timezone Id="Syria Standard Time" DisplayName="(UTC+02:00) Damascus" />
+  </Location>
+  <Location GeoId="223" Name="Switzerland" ISO3166="CH">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="224" Name="United Arab Emirates" ISO3166="AE">
+    <Timezone Id="Arabian Standard Time" DisplayName="(UTC+04:00) Abu Dhabi, Muscat" />
+  </Location>
+  <Location GeoId="225" Name="Trinidad and Tobago" ISO3166="TT">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="227" Name="Thailand" ISO3166="TH">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="228" Name="Tajikistan" ISO3166="TJ">
+    <Timezone Id="West Asia Standard Time" DisplayName="(UTC+05:00) Ashgabat, Tashkent" />
+  </Location>
+  <Location GeoId="231" Name="Tonga" ISO3166="TO">
+    <Timezone Id="Tonga Standard Time" DisplayName="(UTC+13:00) Nuku'alofa" />
+  </Location>
+  <Location GeoId="232" Name="Togo" ISO3166="TG">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="233" Name="São Tomé and Príncipe" ISO3166="ST">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="234" Name="Tunisia" ISO3166="TN">
+    <Timezone Id="W. Central Africa Standard Time" DisplayName="(UTC+01:00) West Central Africa" />
+  </Location>
+  <Location GeoId="235" Name="Turkey" ISO3166="TR">
+    <Timezone Id="Turkey Standard Time" DisplayName="(UTC+03:00) Istanbul" />
+  </Location>
+  <Location GeoId="236" Name="Tuvalu" ISO3166="TV">
+    <Timezone Id="UTC+12" DisplayName="(UTC+12:00) Coordinated Universal Time+12" />
+  </Location>
+  <Location GeoId="237" Name="Taiwan" ISO3166="TW">
+    <Timezone Id="Taipei Standard Time" DisplayName="(UTC+08:00) Taipei" />
+  </Location>
+  <Location GeoId="238" Name="Turkmenistan" ISO3166="TM">
+    <Timezone Id="West Asia Standard Time" DisplayName="(UTC+05:00) Ashgabat, Tashkent" />
+  </Location>
+  <Location GeoId="239" Name="Tanzania" ISO3166="TZ">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="240" Name="Uganda" ISO3166="UG">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="241" Name="Ukraine" ISO3166="UA">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="242" Name="United Kingdom" ISO3166="GB">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="244" Name="United States" ISO3166="US">
+    <Timezone Id="Hawaiian Standard Time" DisplayName="(UTC-10:00) Hawaii" />
+    <Timezone Id="Alaskan Standard Time" DisplayName="(UTC-09:00) Alaska" />
+    <Timezone Id="Pacific Standard Time" DisplayName="(UTC-08:00) Pacific Time (US &amp; Canada)" />
+    <Timezone Id="US Mountain Standard Time" DisplayName="(UTC-07:00) Arizona" />
+    <Timezone Id="Mountain Standard Time" DisplayName="(UTC-07:00) Mountain Time (US &amp; Canada)" />
+    <Timezone Id="Central America Standard Time" DisplayName="(UTC-06:00) Central America" />
+    <Timezone Id="Central Standard Time" DisplayName="(UTC-06:00) Central Time (US &amp; Canada)" />
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+    <Timezone Id="US Eastern Standard Time" DisplayName="(UTC-05:00) Indiana (East)" />
+    <Timezone Id="West Pacific Standard Time" DisplayName="(UTC+10:00) Guam, Port Moresby" />
+    <Timezone Id="Samoa Standard Time" DisplayName="(UTC+13:00) Samoa" />
+  </Location>
+  <Location GeoId="245" Name="Burkina Faso" ISO3166="BF">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="246" Name="Uruguay" ISO3166="UY">
+    <Timezone Id="Montevideo Standard Time" DisplayName="(UTC-03:00) Montevideo" />
+  </Location>
+  <Location GeoId="247" Name="Uzbekistan" ISO3166="UZ">
+    <Timezone Id="West Asia Standard Time" DisplayName="(UTC+05:00) Ashgabat, Tashkent" />
+  </Location>
+  <Location GeoId="248" Name="Saint Vincent and the Grenadines" ISO3166="VC">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="249" Name="Venezuela" ISO3166="VE">
+    <Timezone Id="Venezuela Standard Time" DisplayName="(UTC-04:00) Caracas" />
+  </Location>
+  <Location GeoId="251" Name="Vietnam" ISO3166="VN">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="252" Name="U.S. Virgin Islands" ISO3166="VI">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="253" Name="Vatican City" ISO3166="VA">
+    <Timezone Id="W. Europe Standard Time" DisplayName="(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" />
+  </Location>
+  <Location GeoId="254" Name="Namibia" ISO3166="NA">
+    <Timezone Id="Namibia Standard Time" DisplayName="(UTC+02:00) Windhoek" />
+  </Location>
+  <Location GeoId="259" Name="Samoa" ISO3166="WS">
+    <Timezone Id="Samoa Standard Time" DisplayName="(UTC+13:00) Samoa" />
+  </Location>
+  <Location GeoId="260" Name="Swaziland" ISO3166="SZ">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="261" Name="Yemen" ISO3166="YE">
+    <Timezone Id="Arab Standard Time" DisplayName="(UTC+03:00) Kuwait, Riyadh" />
+  </Location>
+  <Location GeoId="263" Name="Zambia" ISO3166="ZM">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="264" Name="Zimbabwe" ISO3166="ZW">
+    <Timezone Id="South Africa Standard Time" DisplayName="(UTC+02:00) Harare, Pretoria" />
+  </Location>
+  <Location GeoId="270" Name="Montenegro" ISO3166="ME">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="271" Name="Serbia" ISO3166="RS">
+    <Timezone Id="Central Europe Standard Time" DisplayName="(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague" />
+  </Location>
+  <Location GeoId="273" Name="Curaçao" ISO3166="CW">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="276" Name="South Sudan" ISO3166="SS">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="300" Name="Anguilla" ISO3166="AI">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="301" Name="Antarctica" ISO3166="AQ">
+    <Timezone Id="Pacific SA Standard Time" DisplayName="(UTC-04:00) Santiago" />
+  </Location>
+  <Location GeoId="302" Name="Aruba" ISO3166="AW">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="306" Name="Bouvet Island" ISO3166="BV">
+    <Timezone Id="UTC" DisplayName="(UTC) Coordinated Universal Time" />
+  </Location>
+  <Location GeoId="307" Name="Cayman Islands" ISO3166="KY">
+    <Timezone Id="SA Pacific Standard Time" DisplayName="(UTC-05:00) Bogota, Lima, Quito, Rio Branco" />
+  </Location>
+  <Location GeoId="309" Name="Christmas Island" ISO3166="CX">
+    <Timezone Id="SE Asia Standard Time" DisplayName="(UTC+07:00) Bangkok, Hanoi, Jakarta" />
+  </Location>
+  <Location GeoId="311" Name="Cocos (Keeling) Islands" ISO3166="CC">
+    <Timezone Id="Myanmar Standard Time" DisplayName="(UTC+06:30) Yangon (Rangoon)" />
+  </Location>
+  <Location GeoId="312" Name="Cook Islands" ISO3166="CK">
+    <Timezone Id="Hawaiian Standard Time" DisplayName="(UTC-10:00) Hawaii" />
+  </Location>
+  <Location GeoId="315" Name="Falkland Islands" ISO3166="FK">
+    <Timezone Id="SA Eastern Standard Time" DisplayName="(UTC-03:00) Cayenne, Fortaleza" />
+  </Location>
+  <Location GeoId="317" Name="French Guiana" ISO3166="GF">
+    <Timezone Id="SA Eastern Standard Time" DisplayName="(UTC-03:00) Cayenne, Fortaleza" />
+  </Location>
+  <Location GeoId="318" Name="French Polynesia" ISO3166="PF">
+    <Timezone Id="Hawaiian Standard Time" DisplayName="(UTC-10:00) Hawaii" />
+  </Location>
+  <Location GeoId="319" Name="French Southern Territories" ISO3166="TF">
+    <Timezone Id="West Asia Standard Time" DisplayName="(UTC+05:00) Ashgabat, Tashkent" />
+  </Location>
+  <Location GeoId="321" Name="Guadeloupe" ISO3166="GP">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="322" Name="Guam" ISO3166="GU">
+    <Timezone Id="West Pacific Standard Time" DisplayName="(UTC+10:00) Guam, Port Moresby" />
+  </Location>
+  <Location GeoId="324" Name="Guernsey" ISO3166="GG">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="325" Name="Heard Island and McDonald Islands" ISO3166="HM">
+    <Timezone Id="Mauritius Standard Time" DisplayName="(UTC+04:00) Port Louis" />
+  </Location>
+  <Location GeoId="328" Name="Jersey" ISO3166="JE">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="330" Name="Martinique" ISO3166="MQ">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="331" Name="Mayotte" ISO3166="YT">
+    <Timezone Id="E. Africa Standard Time" DisplayName="(UTC+03:00) Nairobi" />
+  </Location>
+  <Location GeoId="332" Name="Montserrat" ISO3166="MS">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="334" Name="New Caledonia" ISO3166="NC">
+    <Timezone Id="Central Pacific Standard Time" DisplayName="(UTC+11:00) Solomon Is., New Caledonia" />
+  </Location>
+  <Location GeoId="335" Name="Niue" ISO3166="NU">
+    <Timezone Id="UTC-11" DisplayName="(UTC-11:00) Coordinated Universal Time-11" />
+  </Location>
+  <Location GeoId="336" Name="Norfolk Island" ISO3166="NF">
+    <Timezone Id="Central Pacific Standard Time" DisplayName="(UTC+11:00) Solomon Is., New Caledonia" />
+  </Location>
+  <Location GeoId="337" Name="Northern Mariana Islands" ISO3166="MP">
+    <Timezone Id="West Pacific Standard Time" DisplayName="(UTC+10:00) Guam, Port Moresby" />
+  </Location>
+  <Location GeoId="339" Name="Pitcairn Islands" ISO3166="PN">
+    <Timezone Id="Pacific Standard Time" DisplayName="(UTC-08:00) Pacific Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="342" Name="South Georgia and the South Sandwich Islands" ISO3166="GS">
+    <Timezone Id="UTC-02" DisplayName="(UTC-02:00) Coordinated Universal Time-02" />
+  </Location>
+  <Location GeoId="343" Name="St Helena, Ascension and Tristan da Cunha" ISO3166="SH">
+    <Timezone Id="Greenwich Standard Time" DisplayName="(UTC+00:00) Monrovia, Reykjavik" />
+  </Location>
+  <Location GeoId="347" Name="Tokelau" ISO3166="TK">
+    <Timezone Id="Tonga Standard Time" DisplayName="(UTC+13:00) Nuku'alofa" />
+  </Location>
+  <Location GeoId="349" Name="Turks and Caicos Islands" ISO3166="TC">
+    <Timezone Id="Eastern Standard Time" DisplayName="(UTC-05:00) Eastern Time (US &amp; Canada)" />
+  </Location>
+  <Location GeoId="351" Name="British Virgin Islands" ISO3166="VG">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="352" Name="Wallis and Futuna" ISO3166="WF">
+    <Timezone Id="UTC+12" DisplayName="(UTC+12:00) Coordinated Universal Time+12" />
+  </Location>
+  <Location GeoId="15126" Name="Isle of Man" ISO3166="IM">
+    <Timezone Id="GMT Standard Time" DisplayName="(UTC+00:00) Dublin, Edinburgh, Lisbon, London" />
+  </Location>
+  <Location GeoId="19618" Name="North Macedonia" ISO3166="MK">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="30967" Name="Sint Maarten" ISO3166="SX">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="31706" Name="Saint Martin" ISO3166="MF">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="7299303" Name="Timor-Leste" ISO3166="TL">
+    <Timezone Id="Tokyo Standard Time" DisplayName="(UTC+09:00) Osaka, Sapporo, Tokyo" />
+  </Location>
+  <Location GeoId="9914689" Name="Kosovo" ISO3166="XK">
+    <Timezone Id="Central European Standard Time" DisplayName="(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb" />
+  </Location>
+  <Location GeoId="10028789" Name="Åland Islands" ISO3166="AX">
+    <Timezone Id="FLE Standard Time" DisplayName="(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius" />
+  </Location>
+  <Location GeoId="161832015" Name="Saint Barthélemy" ISO3166="BL">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+  <Location GeoId="161832256" Name="U.S. Minor Outlying Islands" ISO3166="UM">
+    <Timezone Id="UTC-11" DisplayName="(UTC-11:00) Coordinated Universal Time-11" />
+  </Location>
+  <Location GeoId="161832258" Name="Bonaire, Sint Eustatius and Saba" ISO3166="BQ">
+    <Timezone Id="SA Western Standard Time" DisplayName="(UTC-04:00) Georgetown, La Paz, Manaus, San Juan" />
+  </Location>
+</Locations>

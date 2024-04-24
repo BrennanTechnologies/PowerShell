@@ -1,0 +1,15 @@
+Source System,Target Cube,Data set,Frequency,Data file,Data Folder,Clear data Rule,DM Load Rule
+Anaplan OCF,Finance,OCF FP&A/OPS Forecast,Daily,OCF_Anaplan_FieldRptFinanceExport.csv,OCF,Clear_OCF_Fin_fcst,OCF_ANAPLAN_FIN
+JDE GL,Finance,GL Actuals (AA),4x/day,Finance_Data_ABM_AA.csv,JDE,Clear_JDE_Fin_Actual_Curr,JDE_FINANCE
+,,,,,,Clear_JDE_Fin_Actual_Prev,JDE_FINANCE
+JDE GL,Finance,"GL Forecast FPA (B4,B5)",Daily,Finance_Data_ABM_Fcst.csv,JDE,Clear_JDE_Fin_fcst,JDE_FINANCE
+OCF GL,Finance,GL Actuals,4x/day,GLPeriodBalances.txt,OCF,Clear_OCF_Fin_Actual_Curr,OCF_LOAD_ACT
+,,,,GLENDBAL.txt,,Clear_OCF_Fin_Actual_Prev,OCF_LOAD_ACT
+OCF PPM,Finance,PPM Actuals,4x/day,PPMRevenuePeriodBalances.txt,OCF,,PPM_LOAD_ACT
+ABLE Labor,Labor,Labor Actuals (Hrs/$),Daily,TBD,TBD,TBD,TBD
+Anaplan JDE,Labor,JDE FP&A/OPS Forecast - Labor (Hrs/$),Daily,JDEAnaplan_FieldRptLaborExport.csv,JDE,Clear_JDE_Lbr_Fcst,ANAPLAN_LABOR
+Anaplan OCF,Labor,OCF FP&A/OPS Forecast - Labor (Hrs/$),Daily,OCF_Anaplan_FieldRptLaborExport.csv,OCF,Clear_OCF_Lbr_Fcst,ANAPLAN_LABOR
+JDE /EPAY,Labor,Labor Actuals (Hrs/$),Daily,Time_Data_ABM.csv,JDE,Clear_JDE_Lbr_Actual_Curr,JDE_LABOR
+,,,,,,Clear_JDE_Lbr_Actual_Prev,
+OCF /EPAY,Labor,Labor Actuals (Hrs/$),Daily,Time_Data_GCA.csv,OCF,Clear_OCF_Lbr_Actual_Curr,JDE_LABOR
+,,,,,,Clear_OCF_Lbr_Actual_Prev,

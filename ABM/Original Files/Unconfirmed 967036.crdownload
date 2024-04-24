@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './Wrapper.ps1' -setvariables -importAttrMetadata -importMetadata -databaseRefresh -loadDataFinance -ProcessName 'EPM_Finance'"

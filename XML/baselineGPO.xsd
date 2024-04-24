@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-16"?>
+<xs:schema xmlns:q12="http://www.microsoft.com/GroupPolicy/Settings/Registry" xmlns:q7="http://www.microsoft.com/GroupPolicy/Settings/Security" xmlns:q9="http://www.microsoft.com/GroupPolicy/Settings/SRPV2" xmlns:q3="http://www.microsoft.com/GroupPolicy/Settings/Windows/Registry" xmlns:q8="http://www.microsoft.com/GroupPolicy/Settings/PublicKey" xmlns:q4="http://www.microsoft.com/GroupPolicy/Settings/Printers" xmlns:q1="http://www.microsoft.com/GroupPolicy/Settings/Auditing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:q2="http://www.microsoft.com/GroupPolicy/Settings/Services" xmlns:q5="http://www.microsoft.com/GroupPolicy/Settings/Files" xmlns:q11="http://www.microsoft.com/GroupPolicy/Settings/nrpt" xmlns:q10="http://www.microsoft.com/GroupPolicy/Settings/WindowsFirewall" xmlns:q13="http://www.microsoft.com/GroupPolicy/Settings/Registry" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:q6="http://www.microsoft.com/GroupPolicy/Settings/Security" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.microsoft.com/GroupPolicy/Rsop">
+	<xsd:import namespace="http://www.microsoft.com/GroupPolicy/Types" />
+	<xsd:import namespace="http://www.microsoft.com/GroupPolicy/Settings" />
+	<xsd:element name="Rsop">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ReadTime" type="xsd:dateTime" />
+				<xsd:element name="DataType" type="xsd:string" />
+				<xsd:element name="ComputerResults">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Version" type="xsd:unsignedInt" />
+							<xsd:element name="Name" type="xsd:string" />
+							<xsd:element name="Domain" type="xsd:string" />
+							<xsd:element name="SOM" type="xsd:string" />
+							<xsd:element name="Site" type="xsd:string" />
+							<xsd:element maxOccurs="unbounded" name="SearchedSOM">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Path" type="xsd:string" />
+										<xsd:element name="Type" type="xsd:string" />
+										<xsd:element name="Order" type="xsd:unsignedByte" />
+										<xsd:element name="BlocksInheritance" type="xsd:boolean" />
+										<xsd:element name="Blocked" type="xsd:boolean" />
+										<xsd:element name="Reason" type="xsd:string" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element maxOccurs="unbounded" name="SecurityGroup">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element xmlns:q14="http://www.microsoft.com/GroupPolicy/Types" ref="q14:SID" />
+										<xsd:element xmlns:q15="http://www.microsoft.com/GroupPolicy/Types" ref="q15:Name" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="SlowLink" type="xsd:boolean" />
+							<xsd:element maxOccurs="unbounded" name="ExtensionStatus">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Name" type="xsd:string" />
+										<xsd:element name="Identifier" type="xsd:string" />
+										<xsd:element name="BeginTime" type="xsd:dateTime" />
+										<xsd:element name="EndTime" type="xsd:dateTime" />
+										<xsd:element name="LoggingStatus" type="xsd:string" />
+										<xsd:element name="Error" type="xsd:unsignedShort" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element maxOccurs="unbounded" name="GPO">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="Name" type="xsd:string" />
+										<xsd:element name="Path">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element xmlns:q16="http://www.microsoft.com/GroupPolicy/Types" ref="q16:Identifier" />
+													<xsd:element minOccurs="0" xmlns:q17="http://www.microsoft.com/GroupPolicy/Types" ref="q17:Domain" />
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="VersionDirectory" type="xsd:unsignedByte" />
+										<xsd:element name="VersionSysvol" type="xsd:unsignedByte" />
+										<xsd:element minOccurs="0" name="Enabled" type="xsd:boolean" />
+										<xsd:element name="IsValid" type="xsd:boolean" />
+										<xsd:element name="FilterAllowed" type="xsd:boolean" />
+										<xsd:element name="AccessDenied" type="xsd:boolean" />
+										<xsd:element maxOccurs="unbounded" name="Link">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="SOMPath" type="xsd:string" />
+													<xsd:element name="SOMOrder" type="xsd:unsignedByte" />
+													<xsd:element name="AppliedOrder" type="xsd:unsignedByte" />
+													<xsd:element name="LinkOrder" type="xsd:unsignedByte" />
+													<xsd:element name="Enabled" type="xsd:boolean" />
+													<xsd:element name="NoOverride" type="xsd:boolean" />
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element minOccurs="0" name="SecurityFilter" type="xsd:string" />
+										<xsd:element minOccurs="0" maxOccurs="unbounded" name="ExtensionName" type="xsd:string" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element maxOccurs="unbounded" name="ExtensionData">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element xmlns:q18="http://www.microsoft.com/GroupPolicy/Settings" ref="q18:Extension" />
+										<xsd:element xmlns:q19="http://www.microsoft.com/GroupPolicy/Settings" ref="q19:Name" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="EventsDetails">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="SinglePassEventsDetails">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element maxOccurs="unbounded" name="EventRecord">
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="EventXml" type="xsd:string" />
+																<xsd:element name="EventDescription" type="xsd:string" />
+															</xsd:sequence>
+														</xsd:complexType>
+													</xsd:element>
+													<xsd:element maxOccurs="unbounded" name="ExtensionProcessingTime">
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="ExtensionName" type="xsd:string" />
+																<xsd:element name="ExtensionGuid" type="xsd:string" />
+																<xsd:element name="ElapsedTimeInMilliseconds" type="xsd:unsignedShort" />
+																<xsd:element name="ProcessedTimeStamp" type="xsd:dateTime" />
+															</xsd:sequence>
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:sequence>
+												<xsd:attribute name="ActivityId" type="xsd:string" use="required" />
+												<xsd:attribute name="ProcessingTrigger" type="xsd:string" use="required" />
+												<xsd:attribute name="ProcessingAppMode" type="xsd:string" use="required" />
+												<xsd:attribute name="LinkSpeedInKbps" type="xsd:unsignedShort" use="required" />
+												<xsd:attribute name="SlowLinkThresholdInKbps" type="xsd:unsignedShort" use="required" />
+												<xsd:attribute name="DomainControllerName" type="xsd:string" use="required" />
+												<xsd:attribute name="DomainControllerIPAddress" type="xsd:string" use="required" />
+												<xsd:attribute name="PolicyProcessingMode" type="xsd:string" use="required" />
+												<xsd:attribute name="PolicyElapsedTimeInMilliseconds" type="xsd:unsignedInt" use="required" />
+												<xsd:attribute name="ErrorCount" type="xsd:unsignedByte" use="required" />
+												<xsd:attribute name="WarningCount" type="xsd:unsignedByte" use="required" />
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xs:schema>

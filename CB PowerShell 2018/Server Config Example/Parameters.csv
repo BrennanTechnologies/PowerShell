@@ -1,0 +1,16 @@
+﻿Name,Value
+ExpectedOSVersion,6.3.9600
+NewInterfaceName,LAN
+NewIPv4Address,192.168.6.150
+NewSubnet,255.255.255.240  
+NewDefaultGateway,192.168.6.145 
+NewPrimaryDNS,192.168.6.156
+NewSecondaryDNS,192.168.6.157
+AllowRDPSubnet,10.0.0.0/24
+ADDomain,Lab.net
+NewCDLetter,R:
+NewAdminName,LocalAdmin
+NewComputerName,Server01
+NewSwapFileLocation,D:
+PageFileInitialSize,1024
+PageFileMaximumSize,1024

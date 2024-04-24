@@ -1,0 +1,332 @@
+﻿This is an example of where this client (colch001) does not have an emi resource pool but does have dc/file server type resource pool
+
+This one below doesn’t have a resource pool in it because there are no resource pools that have hybrid2, ems2, emi, or hosted in their names (error trap out alert):
+PowerCLI C:\> get-vmResourceByGpidServerType -serverType sql -gpid colch001
+
+
+serverType           : sql
+gpid                 : colch001
+portGroup            : multi_COLCH001
+resourcePool         :
+pod                  : 251
+osDatastoreCluster   : QTS_EMI_os_251
+swapDatastoreCluster : QTS_EMI_swap_251
+dataDatastoreCluster : QTS_EMI_data_251
+logDatastoreCluster  : QTS_EMI_data_251
+sysDatastoreCluster  : QTS_EMI_data_251
+
+
+This one below is an example of how the same gpid works if you search for file/dc or ctx:
+PowerCLI C:\> get-vmResourceByGpidServerType -serverType file -gpid colch001
+
+
+serverType           : file
+gpid                 : colch001
+portGroup            : multi_COLCH001
+resourcePool         : hybrid_COLCH001_qts_251
+pod                  : 251
+osDatastoreCluster   : QTS_EMS_Client_DC_OS_251
+swapDatastoreCluster : QTS_EMS_Client_DC_Swap_251
+dataDatastoreCluster : QTS_EMS_Client_Files_251
+
+PowerCLI C:\> get-vmResourceByGpidServerType -serverType citrix -gpid colch001
+
+
+serverType           : citrix
+gpid                 : colch001
+portGroup            : multi_COLCH001
+resourcePool         : hybrid_COLCH001_qts_251_ctx
+pod                  : 251
+osDatastoreCluster   : QTS_EMS_Client_Citrix_OS_251
+swapDatastoreCluster : QTS_EMS_Client_Citrix_Swap_251
+
+
+
+<#
+Below are the parameters for input that we can use for serverType and examples of GPID's to use:
+
+$serverType = "sql"#,"citrix","dc","file","omsApp"
+$gpid = "pjtpa001"#"colch001"#"north021"#"tiede001", "apexf401" ,"etest040"#"ruane001" "wexfo001"
+#>
+
+function get-vmResourceByGpidServerType
+{
+    param(
+            [parameter(mandatory = $true)]
+            [string]$serverType,
+            [string]$gpid
+         )
+
+    $tempGpidWildCard = "*" + $gpid + "*"
+    $tempClientPortGroups = Get-vdPortGroup $tempGpidWildCard
+        if(!$tempClientPortGroups)
+            {
+                Write-Host "No Client Exists with $gpid as a GPID"
+                break
+            }#exit with error
+
+    $tempClientPortGroupMulti = $tempClientPortGroups | ?{$_.name -like "multi_*" -and $_.name -notlike "*_**_*" }
+        if ($tempClientPortGroupMulti.count -gt 1)
+            {
+                $tempClientPortGroupMulti = $tempClientPortGroupMulti | select -First 1
+            }#select first 1
+
+    $tempClientResourcePool = get-resourcepool $tempGpidWildCard
+        if($tempClientResourcePool.count -gt 1)
+            {
+                foreach($pool in $tempClientResourcePool)
+                    {
+                        switch ($serverType)
+                            {                            
+                                "citrix" 
+                                    {
+                                        if($pool.name -like "hybrid2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if hybrid2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "ems2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if ems2 pool exists then choose this pool and move forward
+                                        if($pool.name -like "*ctx*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                            }#if ctx pool found, use this name
+                                    }#citrix goes in hybrid2/ems2 if they exist, else it would be ctx
+                                "dc"
+                                    {
+                                        if($pool.name -like "hybrid2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if hybrid2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "ems2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if ems2 pool exists then choose this pool and move forward
+                                        if($pool.name -notlike "*ctx*" -and $pool.name -notlike "*emi*" -and $pool.name -notlike "*hosted*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                    if($tempResourcePoolName.count -gt 1)
+                                                        {
+                                                            $tempResourcePoolName = $tempResourcePoolName | select -First 1
+                                                        }#if there is more than one pool (i.e. multi_gpid and multi_gpid_lan) choose the first one
+                                            }#get the pool that doesn't match ctx/emi/hosted
+                                    }#dc goes in hybrid2/ems2 if they exist, else it would be the pool that didn't have ctx/emi/hosted in the name
+                                "file"
+                                    {
+                                        if($pool.name -like "hybrid2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if hybrid2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "ems2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if ems2 pool exists then choose this pool and move forward
+                                        if($pool.name -notlike "*ctx*" -and $pool.name -notlike "*emi*" -and $pool.name -notlike "*hosted*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                    if($tempResourcePoolName.count -gt 1)
+                                                        {
+                                                            $tempResourcePoolName = $tempResourcePoolName | select -First 1
+                                                        }#if there is more than one pool (i.e. multi_gpid and multi_gpid_lan) choose the first one
+                                            }#get the pool that doesn't match ctx/emi/hosted
+                                    }#file goes in hybrid2/ems2 if they exist, else it would be the pool that didn't have ctx/emi/hosted in the name
+                                "omsApp"
+                                    {
+                                        if($pool.name -like "hybrid2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if hybrid2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "ems2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if ems2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "emi*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if emi pool name found, use this name
+
+                                        if($pool.name -like "hosted*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                            }#if hosted pool name found, use this name
+                                    }#omsApp goes in hybrid2/ems2 if they exist, else it would be hosted/emi
+                                "sql" 
+                                    {
+                                        if($pool.name -like "hybrid2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if hybrid2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "ems2*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if ems2 pool exists then choose this pool and move forward
+
+                                        if($pool.name -like "emi*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                                break
+                                            }#if emi pool name found, use this name
+
+                                        if($pool.name -like "hosted*")
+                                            {
+                                                $tempResourcePoolName = $pool.name
+                                            }#if hosted pool name found, use this name
+                                    }#sql goes in hybrid2/ems2 if they exist, else it would be hosted/emi
+
+                            }#swtich through server types returning hosted/emi for emi, ctx for citrix, ems2 for everything, hybrid2 for everything (hybrid2 first all lines have continue)
+
+                    }#look at the names of resource pool to pick the appropriate one for each server type  
+                                         
+            }#if more than one resource pool found loop through them
+        else        
+            {            
+                $tempResourcePoolName = $tempClientResourcePool.name        
+            }#else only one pool found
+
+    $tempDvswitchName = (get-view ($tempClientPortGroupMulti.ExtensionData.Config.DistributedVirtualSwitch -join ($_.type, "-", $_.value))).name
+    $tempPodNumber = $tempDvswitchName.Split("-")[1].trimstart("POD")
+    $tempPodNumberWildCard = "*" + $tempPodNumber + "*"
+    $tempDatastoreClusterPod = get-datastorecluster $tempPodNumberWildCard
+
+    switch($serverType)
+        {
+            "citrix"
+                {
+                    if($tempResourcePoolName -like "ems2*" -or $tempResourcePoolName -like "hybrid2*")
+                        {
+                            $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_os*"}).name
+                            $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_swap*"}).name
+                            #$tempDataDatastoreClusterName = "NONE"
+                        }#if pool name like ems2/hybrid2 then put in emi datastores
+                    else
+                        {
+                            $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*citrix_os*"}).name
+                            $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*citrix_swap*"}).name
+                        }#else put in ems_client_citrix datastores
+                }#citrix goes in emi if hybrid2/ems2 and citrix for all others
+            "dc"
+                {
+                    $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*dc_os*"}).name
+                    $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*dc_swap*"}).name
+                    $tempDataDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*client_files*"}).name
+                }#dc goes into client_dc datastores
+            "file"
+                {
+                    $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*dc_os*"}).name
+                    $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*dc_swap*"}).name
+                    $tempDataDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*client_files*"}).name
+                }#file goes into client_dc datastores
+            "omsApp"
+                {
+                    $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_os*"}).name
+                    $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_swap*"}).name
+                    $tempDataDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_data*"}).name
+                }#omsApp goes into emi datastores
+            "sql"
+                {
+                    $tempOsDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_os*"}).name
+                    $tempSwapDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_swap*"}).name
+                    $tempDataDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_data*"}).name
+                    $tempLogDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_data*"}).name
+                    $tempSysDatastoreClusterName = ($tempDatastoreClusterPod | ?{$_.name -like "*emi_data*"}).name
+                }#sql goes in emi datastores
+        }#switch through server types returning emi for emi or ctx with hybrid2/ems2 resource pools, citrix for non "2" resource pools, and ems_client_dc for file/dc
+
+    switch($serverType)
+        {
+            "citrix"
+                {
+                    $resourceHash = [ordered]@{
+                                                'serverType' = $serverType
+                                                'gpid' = $gpid
+                                                'portGroup' = $tempClientPortGroupMulti
+                                                'resourcePool' = $tempResourcePoolName
+                                                'pod' = $tempPodNumber
+                                                'osDatastoreCluster' = $tempOsDatastoreClusterName
+                                                'swapDatastoreCluster' = $tempSwapDatastoreClusterName
+                                              }#splatting info for object
+                    $resourceObj = New-Object -TypeName psobject -Property $resourceHash
+                    return $resourceObj
+                }#citrix resource object
+            "dc"
+                {
+                    $resourceHash = [ordered]@{
+                                                'serverType' = $serverType
+                                                'gpid' = $gpid
+                                                'portGroup' = $tempClientPortGroupMulti
+                                                'resourcePool' = $tempResourcePoolName
+                                                'pod' = $tempPodNumber
+                                                'osDatastoreCluster' = $tempOsDatastoreClusterName
+                                                'swapDatastoreCluster' = $tempSwapDatastoreClusterName
+                                                'dataDatastoreCluster' = $tempDataDatastoreClusterName
+                                              }#splatting info for object
+                    $resourceObj = New-Object -TypeName psobject -Property $resourceHash
+                    return $resourceObj
+                }#dc resource object
+            "file"
+                {
+                    $resourceHash = [ordered]@{
+                                                'serverType' = $serverType
+                                                'gpid' = $gpid
+                                                'portGroup' = $tempClientPortGroupMulti
+                                                'resourcePool' = $tempResourcePoolName
+                                                'pod' = $tempPodNumber
+                                                'osDatastoreCluster' = $tempOsDatastoreClusterName
+                                                'swapDatastoreCluster' = $tempSwapDatastoreClusterName
+                                                'dataDatastoreCluster' = $tempDataDatastoreClusterName
+                                              }#splatting info for object
+                    $resourceObj = New-Object -TypeName psobject -Property $resourceHash
+                    return $resourceObj
+                }#file resource object
+            "omsApp"
+                {
+                    $resourceHash = [ordered]@{
+                                                'serverType' = $serverType
+                                                'gpid' = $gpid
+                                                'portGroup' = $tempClientPortGroupMulti
+                                                'resourcePool' = $tempResourcePoolName
+                                                'pod' = $tempPodNumber
+                                                'osDatastoreCluster' = $tempOsDatastoreClusterName
+                                                'swapDatastoreCluster' = $tempSwapDatastoreClusterName
+                                                'dataDatastoreCluster' = $tempDataDatastoreClusterName                                            
+                                              }#splatting info for object
+                    $resourceObj = New-Object -TypeName psobject -Property $resourceHash
+                    return $resourceObj
+                }#omsApp resource object
+            "sql"
+                {
+                    $resourceHash = [ordered]@{
+                                                'serverType' = $serverType
+                                                'gpid' = $gpid
+                                                'portGroup' = $tempClientPortGroupMulti
+                                                'resourcePool' = $tempResourcePoolName
+                                                'pod' = $tempPodNumber
+                                                'osDatastoreCluster' = $tempOsDatastoreClusterName
+                                                'swapDatastoreCluster' = $tempSwapDatastoreClusterName
+                                                'dataDatastoreCluster' = $tempDataDatastoreClusterName
+                                                'logDatastoreCluster' = $tempLogDatastoreClusterName
+                                                'sysDatastoreCluster' = $tempSysDatastoreClusterName
+                                              }#splatting info for object
+                    $resourceObj = New-Object -TypeName psobject -Property $resourceHash
+                    return $resourceObj
+                }#sql resource object
+        }#switch through server types building and returning the object with the information in it we need
+}#end function
