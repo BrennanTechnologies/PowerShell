@@ -1,0 +1,29 @@
+{
+    "Settings": {
+        "ProjectName": "Abacus-SQL",
+        "Branch": "Master",
+        "Artifacts": "Artifacts",
+        "JenkinsServer": "jenkins.management.corp",
+        "JenkinsRepoShare": "Repos",
+        "JenkinsArtifactShare": "Artifacts",
+        "GitRepo": "abadevops/abacus-sql",
+        "GitRepoURL": "https://bitbucket.org/abadevops/abacus-sql/",
+        "CiURL": "https://jenkins.management.corp:8443/job/abacus-sql/",
+        "Compliance": "75",
+        "TestCredentials": [
+            {
+                "Name": "srv-jenkins",
+                "Domain": "management.corp",
+                "SecretId": "14642"
+            }
+        ],
+        "Dependencies": [
+            {
+                "Name": "PSTestReport",
+                "Branch": "master"
+            }
+        ],
+        "Tests": [
+        ]
+    }
+} 

@@ -24,5 +24,4 @@ $LName = "Brennan"
 $H = "Hello {0} {1} !" -f $FName, $LName
 $H
 
-# ternary 
-1 -gt 2 ? "Yes" : "No"
+"

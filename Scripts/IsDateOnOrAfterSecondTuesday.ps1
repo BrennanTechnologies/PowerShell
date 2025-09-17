@@ -1,0 +1,90 @@
+<#
+	.SYNOPSIS
+		Determines if a given date is on or after the second Tuesday of the month.
+	
+	.DESCRIPTION
+		This function takes a date as input and determines if it falls on or after the second Tuesday of the month.
+
+	.PARAMETER InputDate
+		The date to check.
+
+	.EXAMPLE
+		IsDateOnOrAfterSecondTuesday -InputDate 4/1/2024
+		False
+
+	.LINK
+		DateTime Constructors
+		https://learn.microsoft.com/en-us/dotnet/api/system.datetime.-ctor?view=net-8.0
+
+	.NOTES
+		File Name      : IsDateOnOrAfterSecondTuesday.ps1
+		Author         : Chris Brennan
+		Date		   : 2021-10-06
+#>
+function IsDateOnOrAfterSecondTuesday {
+	param (
+		[Parameter(Mandatory = $true)]
+		[datetime]$InputDate
+	)
+
+	### Remove time component from InputDate
+	$InputDate = [DateTime]::new($InputDate.Year, $InputDate.Month, $InputDate.Day)
+
+	### Get the first day of the month
+	$firstDayOfMonth = Get-Date -Year $InputDate.Year -Month $InputDate.Month -Day 1
+
+	### Get the INTEGER day of the week for the first day of the month
+	$dayOfWeek = [int]$firstDayOfMonth.DayOfWeek
+
+	### Calculate the number of days until the next Tuesday
+	$daysUntilNextTuesday = (2 - $dayOfWeek + 7) % 7
+
+	### Get the first Tuesday of the month
+	$firstTuesday = $firstDayOfMonth.AddDays($daysUntilNextTuesday)
+
+	### Get the second Tuesday of the month
+	$secondTuesday = $firstTuesday.AddDays(7)
+
+	### Remove time component from secondTuesday
+	$secondTuesday = [DateTime]::new($secondTuesday.Year, $secondTuesday.Month, $secondTuesday.Day)
+
+	return [bool]$($InputDate -ge $secondTuesday)
+}
+
+#IsDateOnOrAfterSecondTuesday 
+IsDateOnOrAfterSecondTuesday -InputDate 4/1/2024 # False
+exit
+
+### Test Cases
+### ------------------------------------------------------------
+& {
+	@('4/1/2024', '4/8/2024', '4/9/2024', '4/10/2024') | ForEach-Object {
+		$InputDate = $_
+		$Result = IsDateOnOrAfterSecondTuesday -InputDate $InputDate
+		Write-Host "Is $InputDate on or after the second Tuesday? $Result"
+	} ### ==> False, False, True, True
+
+	@('4-1-2024', '4-8-2024', '4-9-2024', '4-10-2024') | ForEach-Object {
+		$InputDate = $_
+		$Result = IsDateOnOrAfterSecondTuesday -InputDate $InputDate
+		Write-Host "Is $InputDate on or after the second Tuesday? $Result"
+	} ### ==> False, False, True, True
+
+	@('04-1-2024', '04-8-2024', '04-9-2024', '04-10-2024') | ForEach-Object {
+		$InputDate = $_
+		$Result = IsDateOnOrAfterSecondTuesday -InputDate $InputDate
+		Write-Host "Is $InputDate on or after the second Tuesday? $Result"
+	} ### ==> False, False, True, True
+} 
+
+###  Other Test Cases
+### ------------------------------------------------------------
+# IsDateOnOrAfterSecondTuesday -InputDate 4/1/2024 # False
+# IsDateOnOrAfterSecondTuesday -InputDate 4/8/2024 # False
+# IsDateOnOrAfterSecondTuesday -InputDate 4/9/2024 # True
+# IsDateOnOrAfterSecondTuesday -InputDate (Get-Date -Year 2024 -Month 4 -Day 9) # True
+# IsDateOnOrAfterSecondTuesday -InputDate 4/10/2024 # True
+# IsDateOnOrAfterSecondTuesday -InputDate 1/1/2021 # False
+# IsDateOnOrAfterSecondTuesday -InputDate 1/19/2021 # True
+# IsDateOnOrAfterSecondTuesday -InputDate 1/12/2021 # True
+

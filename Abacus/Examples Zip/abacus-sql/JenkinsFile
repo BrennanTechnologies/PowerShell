@@ -1,0 +1,140 @@
+node {
+    stage('Stage 0: Clone') {
+        try {
+            checkout scm
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 1: Clean') {
+        try {
+            powershell label: 'RunClean', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task Clean
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 2: Build') {
+        try {
+            powershell label: 'RunBuild', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task Build
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 3: Test') {
+        try {
+            powershell label: 'RunTestsAsContext', returnStdout: false, script: '''
+            Import-Module Abacus-Secret
+            "-----------------------------------------------------------------------"
+            $Settings = Get-Content .\\settings.json | ConvertFrom-Json
+            $Settings | ConvertTo-Json
+            $GUID = New-Guid | Select -ExpandProperty Guid
+            "-----------------------------------------------------------------------"
+            $SecretObject = Get-Secret -SecretId $($Settings.Settings.TestCredentials.SecretId)
+            $SecretAttributes = $($SecretObject | Get-SecretAttributes)
+            $UserName = $($SecretAttributes | ?{$_.FieldName -eq 'Username'} ).Value
+            $Domain   = $($SecretAttributes | ?{$_.FieldName -eq 'Domain'}   ).Value -replace '.com|.corp',''
+            $Password = ConvertTo-SecureString $($($SecretAttributes | ?{$_.FieldName -eq 'Password'} ).Value) -Force -AsPlainText
+            $FullUserName = "$Domain\\$UserName"
+            $Credentials = New-Object PSCredential $FullUserName,$Password
+
+            Try {
+                Write-Host "Running Build Tests..."
+                Start-Job -Name $GUID -Credential $Credentials -ScriptBlock {
+                    Param ($Workspace)
+                    Write-Host "Running under context: `'$($Env:Username)`'"
+
+                    Set-location -Path ($Workspace)
+                    Import-Module Invokebuild
+                    Invoke-Build -File "$($Workspace)\\build.ps1" -Task Test
+                } -ArgumentList $(Get-Location | Select -Expand Path)
+            }
+            Catch {
+                Throw $_.Exception.Message
+            }
+
+            $Job = Get-Job -Name $Guid
+            Wait-Job -Job $Job -Force | Receive-Job
+            '''
+
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 4: WrapArchive') {
+        try {
+            powershell label: 'RunBuild', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task WrapArtifacts
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 5: UploadArtifacts') {
+        try {
+            powershell label: 'RunBuild', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task UploadArtifacts
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return
+        }
+    }
+
+    stage('Stage 5: ConfirmTestsPassed') {
+        try {
+            powershell label: 'RunConfirmTestsPassed', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task ConfirmTestsPassed
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return 1
+        }
+    }
+
+    stage('Stage 6: Publish') {
+        try {
+            powershell label: 'RunPublish', returnStdout: false, script: '''
+            Import-Module Invokebuild
+            Invoke-Build -File .\\build.ps1 -Task Publish
+            '''
+        }
+        catch (Exception) {
+            throw err
+            currentBuild.result = 'FAILED'
+            return
+        }
+    }
+}

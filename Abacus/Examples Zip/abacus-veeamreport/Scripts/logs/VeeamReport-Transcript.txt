@@ -1,0 +1,575 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20200408073626
+Username: MANAGEMENT\adm-cbrennan
+RunAs User: MANAGEMENT\adm-cbrennan
+Machine: NYDC-ZZZVDI11 (Microsoft Windows NT 10.0.14393.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command Import-Module 'c:\Users\adm-cbrennan\.vscode\extensions\ms-vscode.powershell-2020.3.0\modules\PowerShellEditorServices\PowerShellEditorServices.psd1'; Start-EditorServices -HostName 'Visual Studio Code Host' -HostProfileId 'Microsoft.VSCode' -HostVersion '2020.3.0' -AdditionalModules @('PowerShellEditorServices.VSCode') -BundledModulesPath 'c:\Users\adm-cbrennan\.vscode\extensions\ms-vscode.powershell-2020.3.0\modules' -EnableConsoleRepl -LogLevel 'Normal' -LogPath 'c:\Users\adm-cbrennan\.vscode\extensions\ms-vscode.powershell-2020.3.0\logs\1586178469-f5597031-a8b5-4225-ba83-cab8214171ff1586178465662\EditorServices.log' -SessionDetailsPath 'c:\Users\adm-cbrennan\.vscode\extensions\ms-vscode.powershell-2020.3.0\sessions\PSES-VSCode-67280-579210' -FeatureFlags @() 
+Process ID: 64572
+PSVersion: 5.1.14393.3053
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.14393.3053
+BuildVersion: 10.0.14393.3053
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport\Scripts\logs\VeeamReport-Transcript.txt
+Existing log file present... Performing Log rotation
+Log files have been rotated
+Log file created
+Initializing Audit Log.
+Ensuring Audit LogPath is not a NULL value.
+Verifying Audit Path's parent directory.
+Checking to see if Audit Log should be rotated...
+===== Logs initialized =====
+Log started sucessfully...
+Start : Connect-ABAVBRServer
+Connected to Veeam VBR Server: nymgmt-vem01.management.corp
+End   : Connect-ABAVBRServer
+Start: Connect-ABAvCenters ...
+PS>TerminatingError(Out-File): "The process cannot access the file '\\service02.corp\DFS\SHARES\PSAuditLogs\Abacus-Secret\Secrets.log' because it is being used by another process."
+PS>TerminatingError(Out-File): "The process cannot access the file '\\service02.corp\DFS\SHARES\PSAuditLogs\Abacus-Secret\Secrets.log' because it is being used by another process."
+PS>TerminatingError(Connect-VIServer): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: 4/8/2020 7:37:03 AM	Connect-VIServer		Could not resolve the requested VC server.
+Additional Information: There was no endpoint listening at https://nymgmtvc01.management.corp1/sdk that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.	"
+WARNING: ERROR: Connect-ABAvCenters
+4/8/2020 7:37:03 AM	Connect-VIServer		Could not resolve the requested VC server.
+Additional Information: There was no endpoint listening at https://nymgmtvc01.management.corp1/sdk that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.
+Start : Send-Alert
+Sending Alert:  Script Alert: Abacus-VeeamReport.ps1
+End   : Send-Alert
+PS>TerminatingError(): "System error."
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+PS>TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> 
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git add .
+PS>git add .
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<cb-dev>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<cb-dev>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git branch
+PS>git branch
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<cb-dev>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git branch uat
+PS>git branch uat
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<cb-dev>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git checkout uat
+PS>git checkout uat
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+dir
+PS>dir
+
+
+    Directory: C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----         4/8/2020   1:06 PM                .git
+d-----         4/6/2020  11:02 AM                Misc
+d-----         4/8/2020   7:42 AM                Public
+d-----         4/6/2020  11:02 AM                Scripts
+-a----         4/6/2020  11:02 PM            567 .gitignore
+-a----         4/6/2020  11:02 PM            638 Abacus-VeeamReport.psd1
+-a----         4/6/2020  11:41 PM           1911 Abacus-VeeamReport.psm1
+
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git merge cb-dev
+PS>git merge cb-dev
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git add .
+PS>git add .
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push
+PS>git push
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push --set-upstream origin uat
+PS>git push --set-upstream origin uat
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git add .
+PS>git add .
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push
+PS>git push
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push
+PS>git push
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git add .
+PS>git add .
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push
+PS>git push
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git add .
+PS>git add .
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git commit -am "first pull request"
+PS>git commit -am "first pull request"
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
+PS>
+            [System.Diagnostics.DebuggerHidden()]
+            [System.Diagnostics.DebuggerStepThrough()]
+            param()
+            return [Microsoft.PowerShell.PSConsoleReadLine, Microsoft.PowerShell.PSReadLine2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null]::ReadLine(
+                $Host.Runspace,
+                $ExecutionContext,
+                $args[0])
+git push
+PS>git push
+
+PS>@{ 'computerName' = if ([Environment]::MachineName) {[Environment]::MachineName}  else {'localhost'}; 'processId' = $PID; 'instanceId' = $host.InstanceId }
+
+Name                           Value
+----                           -----
+processId                      64572
+computerName                   NYDC-ZZZVDI11
+instanceId                     3eeb09bd-b537-4f9c-9c12-8c42ca38cf47
+
+
+[PS] C:\Users\adm-cbrennan\Documents\WindowsPowerShell\Modules\abacus-veeamreport>
+<uat>:
+
